@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>SAOCOM Tracker</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=DM+Mono:wght@300;400&display=swap');
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#080e16;
+  --panel:#0c1422;
+  --border:rgba(80,130,200,0.14);
+  --border2:rgba(80,130,200,0.26);
+  --c1a:#38bdf8;
+  --c1b:#fbbf24;
+  --text:#5a8aaa;
+  --dim:#304a62;
+  --bright:#bdd8f0;
+  --green:#34d399;
+  --red:#f87171;
+}
+
+html,body{width:100%;height:100%;background:var(--bg);color:var(--bright);
+  font-family:'DM Mono',monospace;display:flex;flex-direction:column;overflow:hidden}
+
+/* ══════════════════ HEADER COMPARTIDO ══════════════════ */
+#header{
+  flex-shrink:0;display:flex;align-items:center;gap:10px;
+  padding:7px 16px;background:var(--panel);
+  border-bottom:1px solid var(--border2);z-index:1000;flex-wrap:wrap;
+}
+#header h1{font-family:'Orbitron',sans-serif;font-weight:900;
+  font-size:clamp(10px,1.6vw,15px);color:var(--bright);letter-spacing:5px;white-space:nowrap}
+#header h1 em{color:var(--c1a);font-style:normal}
+.hdr-right{display:flex;gap:7px;margin-left:auto;align-items:center;flex-wrap:wrap}
+.tle-pill{font-size:8px;letter-spacing:.7px;padding:2px 7px;border:1px solid var(--border);
+  border-radius:3px;color:var(--dim)}
+.tle-pill.ok{color:var(--green);border-color:rgba(52,211,153,0.3)}
+.tle-pill.fb{color:var(--red);border-color:rgba(248,113,113,0.3)}
+.utc-wrap{text-align:right}
+#utcclk{font-family:'Orbitron',sans-serif;font-size:clamp(8px,1.1vw,11px);
+  color:var(--bright);letter-spacing:2px;white-space:nowrap}
+#localclk{font-size:8px;color:var(--text);letter-spacing:1px;margin-top:1px}
+
+/* Toggle vista */
+#view-toggle{
+  background:transparent;border:1px solid var(--border2);
+  color:var(--text);font-family:'DM Mono',monospace;
+  font-size:9px;padding:3px 10px;border-radius:3px;
+  cursor:pointer;letter-spacing:.8px;white-space:nowrap;
+  transition:all .15s;touch-action:manipulation;
+}
+#view-toggle:hover,#view-toggle:active{border-color:var(--c1a);color:var(--c1a)}
+
+/* ══════════════════ CONTENEDORES DE VISTA ══════════════════ */
+#app{flex:1;display:flex;overflow:hidden;min-height:0;position:relative}
+
+/* Vista desktop */
+#view-desktop{width:100%;height:100%;display:flex}
+/* Vista móvil */
+#view-mobile{width:100%;height:100%;display:flex;flex-direction:column}
+
+/* ══════════════════ DESKTOP — SIDEBAR ══════════════════ */
+#sidebar{
+  width:244px;flex-shrink:0;background:var(--panel);
+  border-right:1px solid var(--border);
+  overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column;z-index:500;
+}
+#sidebar::-webkit-scrollbar{width:3px}
+#sidebar::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+.sec{border-bottom:1px solid var(--border);padding:10px 13px}
+.sec-hd{font-family:'Orbitron',sans-serif;font-size:7.5px;letter-spacing:3px;
+  color:var(--dim);text-transform:uppercase;margin-bottom:8px}
+.row{display:flex;justify-content:space-between;align-items:baseline;
+  padding:2.5px 0;border-bottom:1px solid rgba(80,130,200,0.05);font-size:10px}
+.row:last-child{border-bottom:none}
+.lbl{color:var(--dim);font-size:9px}
+.val{color:var(--bright);text-align:right;font-size:10px}
+.val.a{color:var(--c1a)}.val.b{color:var(--c1b)}
+.badge{display:inline-block;margin-top:6px;padding:2px 10px;border-radius:3px;font-size:9px;letter-spacing:1px}
+.badge.up{background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.3);color:var(--green)}
+.badge.dn{background:rgba(248,113,113,0.08);border:1px solid rgba(248,113,113,0.25);color:var(--red)}
+table.passes{width:100%;border-collapse:collapse;font-size:9px}
+table.passes th{color:var(--dim);padding:3px 2px;text-align:left;
+  border-bottom:1px solid var(--border);font-size:8px;letter-spacing:.3px}
+table.passes td{padding:3px 2px;color:var(--text);border-bottom:1px solid rgba(80,130,200,0.04)}
+table.passes tr:last-child td{border-bottom:none}
+.disclaimer{font-size:8px;line-height:1.65;color:var(--dim);
+  padding:10px 13px 12px;border-top:1px solid var(--border);letter-spacing:.2px;margin-top:auto}
+.disclaimer strong{color:rgba(90,140,180,0.55);letter-spacing:.5px}
+
+/* ══════════════════ DESKTOP — MAPA LEAFLET ══════════════════ */
+#map-wrap{flex:1;position:relative;min-width:0}
+#map{width:100%;height:100%}
+.leaflet-container{background:#0a1628}
+.leaflet-control-zoom a{background:var(--panel)!important;color:var(--c1a)!important;
+  border-color:var(--border2)!important;font-family:'DM Mono',monospace!important}
+.leaflet-control-zoom a:hover{background:#0a1828!important}
+.leaflet-control-attribution{background:rgba(8,14,22,0.75)!important;color:var(--dim)!important;font-size:8px!important}
+.leaflet-control-attribution a{color:var(--text)!important}
+#sim-warn{position:absolute;top:8px;left:50%;transform:translateX(-50%);
+  background:rgba(251,191,36,0.12);border:1px solid rgba(251,191,36,0.3);
+  color:#fbbf24;font-size:9px;letter-spacing:1px;padding:3px 14px;border-radius:3px;
+  z-index:900;display:none;white-space:nowrap;pointer-events:none}
+
+/* ══════════════════ DESKTOP — CONTROLS ══════════════════ */
+#controls-desktop{
+  flex-shrink:0;background:var(--panel);border-top:1px solid var(--border2);
+  padding:10px 16px;display:flex;align-items:center;gap:10px;z-index:1000;
+}
+.btn{background:transparent;border:1px solid var(--border);color:var(--text);
+  font-family:'DM Mono',monospace;font-size:11px;padding:5px 13px;border-radius:3px;
+  cursor:pointer;letter-spacing:.8px;white-space:nowrap;transition:all .15s;flex-shrink:0}
+.btn:hover{border-color:var(--c1a);color:var(--bright);background:rgba(56,189,248,0.07)}
+.btn.play{font-size:14px;padding:5px 14px}
+#timelbl{font-family:'Orbitron',sans-serif;font-size:clamp(8px,1.1vw,12px);
+  color:var(--bright);letter-spacing:2px;flex:1;text-align:center;white-space:nowrap}
+#localtlbl{font-family:'Orbitron',sans-serif;font-size:clamp(7px,0.9vw,10px);
+  color:var(--text);letter-spacing:1.5px;text-align:center;white-space:nowrap}
+.scrub-wrap{flex:2;display:flex;align-items:center;gap:8px;min-width:0}
+.slbl{font-size:9px;opacity:.4;white-space:nowrap;letter-spacing:.5px;flex-shrink:0}
+input[type=range]{-webkit-appearance:none;appearance:none;flex:1;height:4px;
+  background:linear-gradient(90deg,rgba(56,189,248,0.15),rgba(56,189,248,0.25));
+  border-radius:2px;outline:none;cursor:pointer;min-width:0}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;
+  border-radius:50%;background:radial-gradient(circle at 38% 32%,#c0eaff,var(--c1a));
+  box-shadow:0 0 8px var(--c1a),0 0 16px rgba(56,189,248,0.3);cursor:pointer;border:none}
+input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;
+  background:var(--c1a);box-shadow:0 0 8px var(--c1a);border:none;cursor:pointer}
+
+/* ══════════════════ MOBILE — GLOBE ══════════════════ */
+#globe-wrap{flex:1;position:relative;overflow:hidden;
+  background:radial-gradient(ellipse at 50% 42%,#040f20 0%,#020810 100%);
+  touch-action:none}
+#stars-canvas{position:absolute;inset:0;pointer-events:none;z-index:0}
+#globe-canvas{position:absolute;inset:0;z-index:1;display:block;width:100%;height:100%}
+#sim-warn-m{position:absolute;top:8px;left:50%;transform:translateX(-50%);
+  background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.25);
+  color:#fbbf24;font-size:8px;letter-spacing:1px;padding:2px 12px;border-radius:3px;
+  z-index:50;display:none;white-space:nowrap;pointer-events:none}
+
+/* Popup tap */
+#sat-popup{position:absolute;z-index:80;background:rgba(4,14,28,0.94);
+  border:1px solid var(--border2);border-radius:6px;padding:10px 14px;min-width:160px;
+  display:none;pointer-events:none;backdrop-filter:blur(12px);
+  box-shadow:0 0 20px rgba(56,189,248,0.15)}
+#sat-popup .p-title{font-family:'Orbitron',sans-serif;font-size:10px;
+  font-weight:700;letter-spacing:2px;margin-bottom:6px}
+#sat-popup .p-row{display:flex;justify-content:space-between;gap:12px;
+  font-size:9px;padding:2px 0;border-bottom:1px solid rgba(56,189,248,0.06)}
+#sat-popup .p-row:last-child{border:none}
+#sat-popup .p-lbl{color:var(--text)}
+#sat-popup .p-val{color:var(--bright);font-weight:500}
+
+/* ══════════════════ MOBILE — PANEL ══════════════════ */
+#panel-mobile{flex-shrink:0;background:var(--panel);
+  border-top:1px solid var(--border2);padding:10px 14px 14px;
+  backdrop-filter:blur(12px)}
+#countdown-wrap{display:flex;gap:8px;margin-bottom:9px}
+.cd-box{flex:1;border:1px solid var(--border);border-radius:4px;
+  padding:6px 8px;background:rgba(56,189,248,0.03)}
+.cd-sat{font-family:'Orbitron',sans-serif;font-size:8px;
+  font-weight:700;letter-spacing:2px;margin-bottom:3px}
+.cd-sat.a{color:var(--c1a)}.cd-sat.b{color:var(--c1b)}
+.cd-time{font-family:'Orbitron',sans-serif;font-size:14px;
+  font-weight:900;letter-spacing:1px;color:var(--bright);line-height:1}
+.cd-label{font-size:7px;color:var(--text);margin-top:2px;letter-spacing:.5px}
+.sat-row-m{display:flex;align-items:center;gap:8px;
+  padding:5px 0;border-bottom:1px solid rgba(56,189,248,0.06)}
+.sat-row-m:last-of-type{border-bottom:none}
+.sat-lbl-m{font-family:'Orbitron',sans-serif;font-weight:700;
+  font-size:9px;letter-spacing:2px;min-width:22px}
+.sat-lbl-m.a{color:var(--c1a)}.sat-lbl-m.b{color:var(--c1b)}
+.sat-data-m{display:flex;gap:12px;flex:1;flex-wrap:wrap}
+.ditem{display:flex;flex-direction:column}
+.dlbl{font-size:6.5px;color:var(--text);letter-spacing:.4px;text-transform:uppercase}
+.dval-m{font-size:9.5px;color:var(--bright)}
+.dval-m.a{color:var(--c1a)}.dval-m.b{color:var(--c1b)}
+#speed-wrap-m{margin-top:9px;display:flex;align-items:center;gap:8px}
+#speed-slider{-webkit-appearance:none;appearance:none;flex:1;height:3px;border-radius:2px;
+  background:linear-gradient(90deg,rgba(56,189,248,0.1),rgba(56,189,248,0.2));
+  outline:none;cursor:pointer}
+#speed-slider::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;
+  border-radius:50%;background:radial-gradient(circle at 38% 32%,#c0eaff,var(--c1a));
+  box-shadow:0 0 10px var(--c1a);border:none;cursor:pointer}
+.ctrl-btn{background:transparent;border:1px solid var(--border);color:var(--text);
+  font-family:'DM Mono',monospace;font-size:10px;padding:5px 10px;border-radius:3px;
+  cursor:pointer;white-space:nowrap;touch-action:manipulation;transition:border-color .15s}
+.ctrl-btn:active{border-color:var(--c1a);color:var(--c1a)}
+.sctrl-lbl{font-size:8px;color:var(--text);white-space:nowrap}
+
+/* ══════════════════ OVERLAY COMPARTIDO ══════════════════ */
+#overlay{position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  background:rgba(8,14,22,0.97);z-index:2000;gap:16px}
+#overlay h2{font-family:'Orbitron',sans-serif;font-weight:900;
+  font-size:20px;letter-spacing:7px;color:var(--bright)}
+#overlay h2 em{color:var(--c1a);font-style:normal}
+.ring{width:40px;height:40px;border:2px solid rgba(56,189,248,0.1);
+  border-top-color:var(--c1a);border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+#loadmsg{font-size:9px;color:var(--text);letter-spacing:1px;text-align:center;
+  max-width:250px;line-height:1.6}
+</style>
+</head>
+<body>
+
+<!-- ══ HEADER ══ -->
+<div id="header">
+  <h1>SAO<em>COM</em> TRACKER</h1>
+  <div class="hdr-right">
+    <span class="tle-pill" id="tlep-a">1A: —</span>
+    <span class="tle-pill" id="tlep-b">1B: —</span>
+    <button id="view-toggle" onclick="toggleView()">📱 MÓVIL</button>
+    <div class="utc-wrap">
+      <div id="utcclk">-- UTC</div>
+      <div id="localclk">-- local</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ APP ══ -->
+<div id="app">
+
+  <!-- ══════════ VISTA DESKTOP ══════════ -->
+  <div id="view-desktop">
+
+    <!-- Sidebar -->
+    <div id="sidebar">
+      <div class="sec">
+        <div class="sec-hd" style="color:var(--c1a)">SAOCOM 1A</div>
+        <div class="row"><span class="lbl">Latitud</span><span class="val a" id="d-a-lat">—</span></div>
+        <div class="row"><span class="lbl">Longitud</span><span class="val a" id="d-a-lon">—</span></div>
+        <div class="row"><span class="lbl">Altitud</span><span class="val a" id="d-a-alt">—</span></div>
+        <div class="row"><span class="lbl">Velocidad</span><span class="val a" id="d-a-vel">—</span></div>
+      </div>
+      <div class="sec">
+        <div class="sec-hd" style="color:var(--c1b)">SAOCOM 1B</div>
+        <div class="row"><span class="lbl">Latitud</span><span class="val b" id="d-b-lat">—</span></div>
+        <div class="row"><span class="lbl">Longitud</span><span class="val b" id="d-b-lon">—</span></div>
+        <div class="row"><span class="lbl">Altitud</span><span class="val b" id="d-b-alt">—</span></div>
+        <div class="row"><span class="lbl">Velocidad</span><span class="val b" id="d-b-vel">—</span></div>
+      </div>
+      <div class="sec" style="flex:1">
+        <div class="sec-hd">Próximos passes (el. &gt; 5°)</div>
+        <div id="d-passes-wrap" style="font-size:9px;color:var(--dim)">Calculando…</div>
+      </div>
+      <div class="disclaimer">
+        <strong>AVISO LEGAL</strong><br><br>
+        SAOCOM es marca registrada de la <strong>CONAE</strong>. Uso didáctico.<br><br>
+        TLEs: <strong>Space-Track.org</strong> vía CelesTrak.
+        Mapa © <strong>OpenStreetMap</strong> / CARTO.
+      </div>
+    </div>
+
+    <!-- Mapa -->
+    <div id="map-wrap">
+      <div id="map"></div>
+      <div id="sim-warn">⚠ TIEMPO SIMULADO</div>
+    </div>
+
+  </div><!-- /view-desktop -->
+
+  <!-- ══════════ VISTA MÓVIL ══════════ -->
+  <div id="view-mobile" style="display:none">
+
+    <div id="globe-wrap">
+      <canvas id="stars-canvas"></canvas>
+      <canvas id="globe-canvas"></canvas>
+      <div id="sim-warn-m">⚠ TIEMPO SIMULADO</div>
+
+      <div id="sat-popup">
+        <div class="p-title" id="pp-title">—</div>
+        <div class="p-row"><span class="p-lbl">Latitud</span><span class="p-val" id="pp-lat">—</span></div>
+        <div class="p-row"><span class="p-lbl">Longitud</span><span class="p-val" id="pp-lon">—</span></div>
+        <div class="p-row"><span class="p-lbl">Altitud</span><span class="p-val" id="pp-alt">—</span></div>
+        <div class="p-row"><span class="p-lbl">Velocidad</span><span class="p-val" id="pp-vel">—</span></div>
+      </div>
+    </div>
+
+    <div id="panel-mobile">
+      <div id="countdown-wrap">
+        <div class="cd-box">
+          <div class="cd-sat a">1A</div>
+          <div class="cd-time" id="cd-a">--:--</div>
+          <div class="cd-label">próximo pase</div>
+        </div>
+        <div class="cd-box">
+          <div class="cd-sat b">1B</div>
+          <div class="cd-time" id="cd-b">--:--</div>
+          <div class="cd-label">próximo pase</div>
+        </div>
+      </div>
+      <div class="sat-row-m">
+        <div class="sat-lbl-m a">1A</div>
+        <div class="sat-data-m">
+          <div class="ditem"><span class="dlbl">Lat</span><span class="dval-m a" id="m-a-lat">—</span></div>
+          <div class="ditem"><span class="dlbl">Lon</span><span class="dval-m a" id="m-a-lon">—</span></div>
+          <div class="ditem"><span class="dlbl">Alt</span><span class="dval-m a" id="m-a-alt">—</span></div>
+          <div class="ditem"><span class="dlbl">km/h</span><span class="dval-m a" id="m-a-vel">—</span></div>
+        </div>
+      </div>
+      <div class="sat-row-m">
+        <div class="sat-lbl-m b">1B</div>
+        <div class="sat-data-m">
+          <div class="ditem"><span class="dlbl">Lat</span><span class="dval-m b" id="m-b-lat">—</span></div>
+          <div class="ditem"><span class="dlbl">Lon</span><span class="dval-m b" id="m-b-lon">—</span></div>
+          <div class="ditem"><span class="dlbl">Alt</span><span class="dval-m b" id="m-b-alt">—</span></div>
+          <div class="ditem"><span class="dlbl">km/h</span><span class="dval-m b" id="m-b-vel">—</span></div>
+        </div>
+      </div>
+      <div id="speed-wrap-m">
+        <button class="ctrl-btn" onclick="goNow()">⊙ HOY</button>
+        <span class="sctrl-lbl">◀</span>
+        <input type="range" id="speed-slider" min="-100" max="100" value="0" step="1"
+               oninput="onSpeedChange(this.value)"
+               onmouseup="snapSpeed()" ontouchend="snapSpeed()">
+        <span class="sctrl-lbl">▶</span>
+      </div>
+    </div>
+
+  </div><!-- /view-mobile -->
+
+  <!-- Overlay compartido -->
+  <div id="overlay">
+    <div class="ring"></div>
+    <h2>SAO<em>COM</em></h2>
+    <div id="loadmsg">Iniciando…</div>
+  </div>
+
+</div><!-- /app -->
+
+<!-- Desktop controls (fuera de #app para que quede fijo abajo) -->
+<div id="controls-desktop">
+  <button class="btn" onclick="goNow()">⊙ AHORA</button>
+  <button class="btn play" id="playbtn" onclick="togglePlay()">▶</button>
+  <div style="display:flex;flex-direction:column;align-items:center;flex:1;gap:1px">
+    <div id="timelbl">—</div>
+    <div id="localtlbl">—</div>
+  </div>
+  <div class="scrub-wrap">
+    <span class="slbl">◀ ATRÁS</span>
+    <input type="range" id="scrubber" min="-100" max="100" value="0" step="1"
+           oninput="onScrub(this.value)" onmouseup="snapCenter()" ontouchend="snapCenter()">
+    <span class="slbl">ADELANTE ▶</span>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/satellite.js/4.0.0/satellite.min.js"></script>
+<script>
+/* ═══════════════════════════════════════════════════════════
+   SAOCOM TRACKER — Versión unificada desktop + móvil
+   Detección automática por ancho de pantalla.
+   Botón para alternar vistas manualmente.
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── ESTADO COMPARTIDO ── */
+var TLE_FB = {
+  a:['1 43641U 18076A   26051.95038859  .00001149  00000-0  15091-3 0  9995',
+     '2 43641  97.8873 240.3595 0001355  80.3746 279.7620 14.82150807398887'],
+  b:['1 46265U 20059A   25297.96057678  .00000754  00000-0  10123-3 0  9998',
+     '2 46265  97.8868 122.1904 0001357  88.1799 271.9569 14.82155246278642']
+};
+
+var sr        = {a:null, b:null};
+var tleRaw    = {a:['',''], b:['','']};
+var BASE      = new Date();
+var tOff      = 0;          // offset segundos
+var scrubVel  = 0;          // seg simulados / seg real
+var playing   = false;
+var lastTs    = null;
+var obsLat    = -34.61, obsLon = -58.37;
+var isMobile  = window.innerWidth < 768;
+var activeView = isMobile ? 'mobile' : 'desktop';
+
+/* ── DETECCIÓN Y TOGGLE DE VISTA ── */
+function applyView(v) {
+  activeView = v;
+  var isM = v === 'mobile';
+  document.getElementById('view-desktop').style.display  = isM ? 'none'  : 'flex';
+  document.getElementById('view-mobile').style.display   = isM ? 'flex'  : 'none';
+  document.getElementById('controls-desktop').style.display = isM ? 'none' : 'flex';
+  document.getElementById('view-toggle').textContent = isM ? '🖥 DESKTOP' : '📱 MÓVIL';
+  if (isM) { setTimeout(resizeMobile, 50); }
+  else      { setTimeout(function(){ if(leafletMap) leafletMap.invalidateSize(); }, 50); }
+}
+
+window.toggleView = function() {
+  applyView(activeView === 'desktop' ? 'mobile' : 'desktop');
+};
+
+/* ── UTILS COMPARTIDOS ── */
+function parseTLElines(txt){
+  var lines=txt.replace(/\r/g,'').trim().split('\n').map(function(s){return s.trim();}).filter(Boolean);
+  for(var i=0;i<lines.length-1;i++){
+    if(/^1 \d{5}/.test(lines[i])&&/^2 \d{5}/.test(lines[i+1]))return[lines[i],lines[i+1]];
+  }
+  return null;
+}
+function parseTLEepoch(l1){
+  try{
+    var yy=parseInt(l1.slice(18,20),10),yr=yy<57?2000+yy:1900+yy;
+    var d=new Date(Date.UTC(yr,0,1)+(parseFloat(l1.slice(20,32))-1)*86400000);
+    return d.toISOString().slice(2,10);
+  }catch(e){return '?';}
+}
+function getSatPos(satrec,date){
+  try{
+    var pv=satellite.propagate(satrec,date);
+    if(!pv||!pv.position)return null;
+    var gmst=satellite.gstime(date);
+    var geo=satellite.eciToGeodetic(pv.position,gmst);
+    var v=pv.velocity;
+    return{lat:satellite.degreesLat(geo.latitude),lon:satellite.degreesLong(geo.longitude),
+           alt:geo.height,vel:v?Math.sqrt(v.x*v.x+v.y*v.y+v.z*v.z):7.55};
+  }catch(e){return null;}
+}
+function getLookEl(satrec,date,olat,olon){
+  try{
+    var pv=satellite.propagate(satrec,date);
+    if(!pv||!pv.position)return null;
+    var gmst=satellite.gstime(date);
+    var obs={longitude:satellite.degreesToRadians(olon),latitude:satellite.degreesToRadians(olat),height:0};
+    var ecf=satellite.eciToEcf(pv.position,gmst);
+    return satellite.radiansToDegrees(satellite.ecfToLookAngles(obs,ecf).elevation);
+  }catch(e){return null;}
+}
+function fmtCountdown(ms){
+  if(ms<=0)return 'VISIBLE';
+  var s=Math.floor(ms/1000),h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sc=s%60;
+  if(h>0)return h+'h '+String(m).padStart(2,'0')+'m';
+  return String(m).padStart(2,'0')+':'+String(sc).padStart(2,'0');
+}
+function setEl(id,val,suf,dec){
+  var el=document.getElementById(id);if(!el)return;
+  el.textContent=(val==null)?'—':(typeof val==='number'?val.toFixed(dec!=null?dec:1):val)+(suf||'');
+}
+
+/* ── TLE FETCH ── */
+function fetchTLE(norad,fb,id,done){
+  var pill=document.getElementById('tlep-'+id);
+  var tag=id==='a'?'1A':'1B';
+  fetch('https://celestrak.org/satcat/tle.php?CATNR='+norad,{signal:AbortSignal.timeout(7000)})
+  .then(function(r){return r.ok?r.text():Promise.reject(r.status);})
+  .then(function(txt){
+    var tle=parseTLElines(txt);if(!tle)throw new Error('invalid');
+    if(pill){pill.textContent=tag+': '+parseTLEepoch(tle[0]);pill.className='tle-pill ok';}
+    done(tle);
+  }).catch(function(){
+    fetch('https://celestrak.org/satcat/tle.php?CATNR='+norad+'&FORMAT=tle',{signal:AbortSignal.timeout(6000)})
+    .then(function(r){return r.ok?r.text():Promise.reject(r.status);})
+    .then(function(txt){
+      var tle=parseTLElines(txt);if(!tle)throw new Error('invalid');
+      if(pill){pill.textContent=tag+': '+parseTLEepoch(tle[0]);pill.className='tle-pill ok';}
+      done(tle);
+    }).catch(function(){
+      if(pill){pill.textContent=tag+': local '+parseTLEepoch(fb[0]);pill.className='tle-pill fb';}
+      done(fb);
+    });
+  });
+}
+
+/* ══════════════════════════════════════════════════
+   VISTA DESKTOP — Leaflet
+   ══════════════════════════════════════════════════ */
+var leafletMap=null, passCache={a:null,b:null};
+var sel='a';
+var trackLayers={a:{past:null,future:null},b:{past:null,future:null}};
+var footprints={a:null,b:null}, satMarkers={a:null,b:null}, obsMarker=null, nightPoly=null;
+var META={
+  a:{name:'SAOCOM-1A',norad:43641,color:'#38bdf8',colorDark:'#0077cc'},
+  b:{name:'SAOCOM-1B',norad:46265,color:'#fbbf24',colorDark:'#cc6600'}
+};
+
+function initLeaflet(){
+  if(leafletMap)return;
+  leafletMap=L.map('map',{center:[0,0],zoom:2,minZoom:1,maxZoom:8,
+    zoomControl:true,attributionControl:true,worldCopyJump:false});
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png',{
+    attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> © <a href="https://carto.com/attributions">CARTO</a>',
+    subdomains:'abcd',maxZoom:19
+  }).addTo(leafletMap);
+}
+
+function makeSatIcon(color,label,big){
+  var S=big?48:38;
+  var svg='<svg width="'+(S*2.2)+'" height="'+(S*1.8)+'" viewBox="0 0 '+(S*2.2)+' '+(S*1.8)+'" xmlns="http://www.w3.org/2000/svg">'
+    +'<ellipse cx="'+(S*1.1)+'" cy="'+(S*0.7)+'" rx="'+(S*0.9)+'" ry="'+(S*0.9)+'" fill="'+color+'" fill-opacity="0.15"/>'
+    +'<rect x="'+(S*0.05)+'" y="'+(S*0.55)+'" width="'+(S*0.55)+'" height="'+(S*0.3)+'" fill="'+color+'" fill-opacity="0.55" stroke="'+color+'" stroke-width="0.8" rx="1"/>'
+    +'<rect x="'+(S*1.6)+'" y="'+(S*0.55)+'" width="'+(S*0.55)+'" height="'+(S*0.3)+'" fill="'+color+'" fill-opacity="0.55" stroke="'+color+'" stroke-width="0.8" rx="1"/>'
+    +'<rect x="'+(S*0.68)+'" y="'+(S*0.5)+'" width="'+(S*0.84)+'" height="'+(S*0.4)+'" fill="'+color+'" stroke="white" stroke-width="0.8" rx="2"/>'
+    +'<rect x="'+(S*0.7)+'" y="'+(S*0.52)+'" width="'+(S*0.8)+'" height="'+(S*0.12)+'" fill="white" fill-opacity="0.2" rx="1"/>'
+    +'<line x1="'+(S*1.1)+'" y1="'+(S*0.5)+'" x2="'+(S*1.1)+'" y2="'+(S*0.28)+'" stroke="'+color+'" stroke-width="1.2"/>'
+    +'<circle cx="'+(S*1.1)+'" cy="'+(S*0.7)+'" r="3" fill="white"/>'
+    +'<rect x="'+(S*0.6)+'" y="'+(S*1.02)+'" width="'+(S*1.02)+'" height="'+(S*0.48)+'" fill="rgba(5,10,20,0.85)" rx="3"/>'
+    +'<text x="'+(S*1.1)+'" y="'+(S*1.33)+'" text-anchor="middle" dominant-baseline="middle" font-family="Orbitron,monospace" font-weight="700" font-size="'+(big?10:8)+'" fill="'+color+'">'+label+'</text>'
+    +'</svg>';
+  return L.divIcon({html:svg,className:'',iconSize:[S*2.2,S*1.8],iconAnchor:[S*1.1,S*0.7]});
+}
+function makeObsIcon(){
+  return L.divIcon({html:'<svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="#cc1111" stroke="white" stroke-width="2"/><circle cx="8" cy="8" r="2" fill="white"/></svg>',
+    className:'',iconSize:[16,16],iconAnchor:[8,8]});
+}
+
+function sunPos(date){
+  var JD=date.getTime()/86400000+2440587.5,n=JD-2451545;
+  var L=(280.46+0.9856474*n)%360,g=(357.528+0.9856003*n)%360,gR=g*Math.PI/180;
+  var lam=(L+1.915*Math.sin(gR)+0.020*Math.sin(2*gR))*Math.PI/180;
+  var eps=23.439*Math.PI/180,dec=Math.asin(Math.sin(eps)*Math.sin(lam));
+  var ra=Math.atan2(Math.cos(eps)*Math.sin(lam),Math.cos(lam));
+  var GMST=((18.697375+24.065709824279*n)%24)*15;
+  var lon=ra*180/Math.PI-GMST;lon=((lon%360)+360)%360;if(lon>180)lon-=360;
+  return{lat:dec*180/Math.PI,lon:lon};
+}
+function buildNightPolygon(date){
+  var sun=sunPos(date);
+  var sLR=sun.lat*Math.PI/180,sLoR=sun.lon*Math.PI/180;
+  var term=[],nightPoleLat=-sun.lat,nightPoleLon=sun.lon+180;
+  if(nightPoleLon>180)nightPoleLon-=360;
+  for(var az=0;az<=360;az++){
+    var azR=az*Math.PI/180;
+    var lat=Math.asin(Math.sin(sLR)*Math.cos(Math.PI/2)+Math.cos(sLR)*Math.sin(Math.PI/2)*Math.cos(azR));
+    var lon2=sLoR+Math.atan2(Math.sin(azR)*Math.sin(Math.PI/2)*Math.cos(sLR),Math.cos(Math.PI/2)-Math.sin(sLR)*Math.sin(lat));
+    var latD=lat*180/Math.PI,lonD=lon2*180/Math.PI;
+    if(lonD>180)lonD-=360;if(lonD<-180)lonD+=360;
+    term.push([Math.max(-85,Math.min(85,latD)),lonD]);
+  }
+  term.push([Math.max(-85,Math.min(85,nightPoleLat)),nightPoleLon]);
+  return term;
+}
+
+function getTrackSegs(satrec,center){
+  var past=[],future=[],pastSeg=[],futureSeg=[],prevLon=null;
+  function add(seg,lat,lon){
+    if(prevLon!==null&&Math.abs(lon-prevLon)>180){
+      if(seg===pastSeg){past.push(pastSeg.slice());pastSeg.length=0;}
+      else{future.push(futureSeg.slice());futureSeg.length=0;}
+    }
+    seg.push([Math.max(-85,Math.min(85,lat)),lon]);prevLon=lon;
+  }
+  for(var m=-110;m<=110;m++){
+    var d=new Date(center.getTime()+m*60000),pos=getSatPos(satrec,d);
+    if(!pos){prevLon=null;continue;}
+    if(m<=0)add(pastSeg,pos.lat,pos.lon);else add(futureSeg,pos.lat,pos.lon);
+  }
+  if(pastSeg.length)past.push(pastSeg);if(futureSeg.length)future.push(futureSeg);
+  return{past,future};
+}
+
+function footprintRadiusM(altKm){return Math.acos(6371/(6371+altKm))*6371*1000;}
+
+/* Desktop passes */
+function computePasses(satrec,olat,olon,fromDate){
+  var passes=[],d=new Date(fromDate),end=new Date(fromDate.getTime()+7*86400000);
+  var inPass=false,pStart=null,maxEl=-90,pEnd=null;
+  while(d<end&&passes.length<6){
+    var el=getLookEl(satrec,d,olat,olon);
+    if(el!==null){
+      if(el>5){if(!inPass){inPass=true;pStart=new Date(d);}if(el>maxEl)maxEl=el;}
+      else if(inPass){inPass=false;pEnd=new Date(d);passes.push({start:pStart,maxEl,end:pEnd});maxEl=-90;}
+    }
+    d=new Date(d.getTime()+15000);
+  }
+  return passes;
+}
+function renderDesktopPasses(){
+  var wrap=document.getElementById('d-passes-wrap');
+  var now=new Date(BASE.getTime()+tOff*1000);
+  if(!passCache.a&&sr.a)passCache.a=computePasses(sr.a,obsLat,obsLon,now);
+  if(!passCache.b&&sr.b)passCache.b=computePasses(sr.b,obsLat,obsLon,now);
+  var all=[];
+  (passCache.a||[]).forEach(function(p){all.push({p,id:'a'});});
+  (passCache.b||[]).forEach(function(p){all.push({p,id:'b'});});
+  all.sort(function(x,y){return x.p.start-y.p.start;});all=all.slice(0,8);
+  if(!all.length){wrap.innerHTML='<span style="color:var(--dim)">Sin passes en 7 días</span>';return;}
+  var html='<table class="passes"><thead><tr><th>Sat.</th><th>Fecha/Hora UTC</th><th>El. máx.</th><th>Dur.</th></tr></thead><tbody>';
+  all.forEach(function(item){
+    var p=item.p,color=item.id==='a'?'var(--c1a)':'var(--c1b)',label=item.id==='a'?'1A':'1B';
+    var dur=Math.round((p.end-p.start)/1000),mn=Math.floor(dur/60),sc=dur%60;
+    var ds=p.start.toISOString().slice(5,10)+' '+p.start.toISOString().slice(11,16);
+    html+='<tr><td style="color:'+color+';font-family:Orbitron,monospace;font-weight:700">'+label+'</td>'
+      +'<td>'+ds+'</td><td style="color:'+color+';font-weight:bold">'+p.maxEl.toFixed(1)+'°</td>'
+      +'<td>'+(mn>0?mn+'m ':'')+sc+'s</td></tr>';
+  });
+  wrap.innerHTML=html+'</tbody></table>';
+}
+
+function renderDesktop(t){
+  if(!leafletMap||activeView!=='desktop')return;
+
+  /* Datos sidebar */
+  ['a','b'].forEach(function(id){
+    var satrec=sr[id];if(!satrec)return;
+    var pos=getSatPos(satrec,t);if(!pos)return;
+    setEl('d-'+id+'-lat',pos.lat,'°');setEl('d-'+id+'-lon',pos.lon,'°');
+    setEl('d-'+id+'-alt',pos.alt,' km',0);setEl('d-'+id+'-vel',pos.vel*3600,' km/h',0);
+  });
+
+  /* Noche */
+  if(nightPoly){leafletMap.removeLayer(nightPoly);nightPoly=null;}
+  try{
+    nightPoly=L.polygon(buildNightPolygon(t),{color:'rgba(0,0,0,0)',fillColor:'#0a1628',
+      fillOpacity:0.45,weight:0,smoothFactor:1,interactive:false}).addTo(leafletMap);
+  }catch(e){}
+
+  /* Satélites */
+  ['a','b'].forEach(function(id){
+    var satrec=sr[id];if(!satrec)return;
+    var meta=META[id],pos=getSatPos(satrec,t);if(!pos)return;
+    var clat=Math.max(-85,Math.min(85,pos.lat));
+    var segs=getTrackSegs(satrec,t);
+    if(trackLayers[id].past){leafletMap.removeLayer(trackLayers[id].past);trackLayers[id].past=null;}
+    if(trackLayers[id].future){leafletMap.removeLayer(trackLayers[id].future);trackLayers[id].future=null;}
+    if(segs.past.length)trackLayers[id].past=L.polyline(segs.past,{color:meta.colorDark,weight:1.5,opacity:0.5,dashArray:'4 5',interactive:false,smoothFactor:0}).addTo(leafletMap);
+    if(segs.future.length)trackLayers[id].future=L.polyline(segs.future,{color:meta.color,weight:2,opacity:0.9,interactive:false,smoothFactor:0}).addTo(leafletMap);
+    if(footprints[id]){leafletMap.removeLayer(footprints[id]);}
+    footprints[id]=L.circle([clat,pos.lon],{radius:footprintRadiusM(pos.alt),color:meta.color,weight:1,opacity:0.25,fillOpacity:0.04,interactive:false}).addTo(leafletMap);
+    if(satMarkers[id]){satMarkers[id].setLatLng([clat,pos.lon]);satMarkers[id].setIcon(makeSatIcon(meta.color,id==='a'?'1A':'1B',id===sel));}
+    else{satMarkers[id]=L.marker([clat,pos.lon],{icon:makeSatIcon(meta.color,id==='a'?'1A':'1B',id===sel),zIndexOffset:id===sel?1000:0,interactive:true}).addTo(leafletMap);}
+  });
+
+  if(!obsMarker){obsMarker=L.marker([obsLat,obsLon],{icon:makeObsIcon(),zIndexOffset:500,title:'Observador'}).addTo(leafletMap);}
+  else obsMarker.setLatLng([obsLat,obsLon]);
+
+  document.getElementById('sim-warn').style.display=Math.abs(tOff)>60?'block':'none';
+}
+
+/* ══════════════════════════════════════════════════
+   VISTA MÓVIL — Three.js Globe
+   ══════════════════════════════════════════════════ */
+var threeReady=false;
+var renderer3,scene3,camera3,globeGroup3,earthMesh3;
+var satMeshes3={a:null,b:null},trailLines3={a:[],b:[]};
+var EARTH_R=2.0,frameCount=0;
+var projVec3=new THREE.Vector3();
+var satScreen3={a:{x:-999,y:-999},b:{x:-999,y:-999}};
+var isDragging3=false,prevTouch3={x:0,y:0},rotVelX3=0,rotVelY3=0,autoRotate3=true;
+var popupVisible3=false,popupId3=null;
+var nextPass3={a:null,b:null},passSearchDone3={a:false,b:false};
+
+function initThree(){
+  if(threeReady)return;
+  var canvas3=document.getElementById('globe-canvas');
+  renderer3=new THREE.WebGLRenderer({canvas:canvas3,antialias:true,alpha:true});
+  renderer3.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  renderer3.setClearColor(0x000000,0);
+  scene3=new THREE.Scene();
+  camera3=new THREE.PerspectiveCamera(42,1,0.1,200);
+  camera3.position.set(0,0,6.5);
+  scene3.add(new THREE.AmbientLight(0x1a3a5c,1.4));
+  var sun=new THREE.DirectionalLight(0xffeedd,1.8);sun.position.set(8,4,6);scene3.add(sun);
+  var rim=new THREE.DirectionalLight(0x38bdf8,0.5);rim.position.set(-6,0,-4);scene3.add(rim);
+  globeGroup3=new THREE.Group();scene3.add(globeGroup3);
+  buildAtmosphere3();
+  buildTouchHandlers();
+  threeReady=true;
+}
+
+function buildGlobeTexture3(geoJson){
+  var TW=2048,TH=1024,tc=document.createElement('canvas');
+  tc.width=TW;tc.height=TH;var tx=tc.getContext('2d');
+  var og=tx.createLinearGradient(0,0,0,TH);
+  og.addColorStop(0,'#061828');og.addColorStop(0.5,'#0a2540');og.addColorStop(1,'#061828');
+  tx.fillStyle=og;tx.fillRect(0,0,TW,TH);
+  function ll2px(lat,lon){return[(lon+180)/360*TW,(90-lat)/180*TH];}
+  function drawRing(ring,fill,stroke){
+    tx.beginPath();var first=true,prevX=null;
+    for(var i=0;i<ring.length;i++){
+      var pt=ll2px(ring[i][1],ring[i][0]);
+      if(first){tx.moveTo(pt[0],pt[1]);first=false;}
+      else{if(prevX!==null&&Math.abs(pt[0]-prevX)>TW/2)tx.moveTo(pt[0],pt[1]);else tx.lineTo(pt[0],pt[1]);}
+      prevX=pt[0];
+    }
+    tx.closePath();
+    if(fill){tx.fillStyle=fill;tx.fill();}
+    if(stroke){tx.strokeStyle=stroke;tx.lineWidth=0.6;tx.stroke();}
+  }
+  if(geoJson){
+    var features=geoJson.features;
+    for(var fi=0;fi<features.length;fi++){
+      var geom=features[fi].geometry,polys=geom.type==='Polygon'?[geom.coordinates]:geom.coordinates;
+      for(var pi=0;pi<polys.length;pi++)for(var ri=0;ri<polys[pi].length;ri++)drawRing(polys[pi][ri],'#1c4a2e',null);
+    }
+    for(var fi2=0;fi2<features.length;fi2++){
+      var geom2=features[fi2].geometry,polys2=geom2.type==='Polygon'?[geom2.coordinates]:geom2.coordinates;
+      for(var pi2=0;pi2<polys2.length;pi2++)for(var ri2=0;ri2<polys2[pi2].length;ri2++)drawRing(polys2[pi2][ri2],null,'rgba(56,189,248,0.35)');
+    }
+  }
+  tx.strokeStyle='rgba(56,189,248,0.06)';tx.lineWidth=0.5;
+  for(var lo=-150;lo<=180;lo+=30){var px=(lo+180)/360*TW;tx.beginPath();tx.moveTo(px,0);tx.lineTo(px,TH);tx.stroke();}
+  for(var la=-60;la<=60;la+=30){var py=(90-la)/180*TH;tx.beginPath();tx.moveTo(0,py);tx.lineTo(TW,py);tx.stroke();}
+  tx.strokeStyle='rgba(56,189,248,0.12)';tx.lineWidth=0.8;
+  var yeq=90/180*TH;tx.beginPath();tx.moveTo(0,yeq);tx.lineTo(TW,yeq);tx.stroke();
+  return new THREE.CanvasTexture(tc);
+}
+
+function buildEarth3(geoJson){
+  var tex=buildGlobeTexture3(geoJson);
+  var geo=new THREE.SphereGeometry(EARTH_R,72,72);
+  var mat=new THREE.MeshPhongMaterial({map:tex,transparent:true,opacity:0.88,shininess:20,
+    specular:new THREE.Color(0x38bdf8),emissive:new THREE.Color(0x030e1c),emissiveIntensity:0.35});
+  earthMesh3=new THREE.Mesh(geo,mat);globeGroup3.add(earthMesh3);
+  var wfGeo=new THREE.SphereGeometry(EARTH_R+0.003,36,18);
+  var wfMat=new THREE.MeshBasicMaterial({color:0x38bdf8,wireframe:true,transparent:true,opacity:0.035});
+  globeGroup3.add(new THREE.Mesh(wfGeo,wfMat));
+}
+
+function buildAtmosphere3(){
+  var geo=new THREE.SphereGeometry(EARTH_R*1.09,48,48);
+  scene3.add(new THREE.Mesh(geo,new THREE.MeshPhongMaterial({color:0x0a2a4a,transparent:true,opacity:0.16,side:THREE.BackSide,shininess:0,emissive:new THREE.Color(0x38bdf8),emissiveIntensity:0.07})));
+  var geo2=new THREE.SphereGeometry(EARTH_R*1.16,32,32);
+  scene3.add(new THREE.Mesh(geo2,new THREE.MeshBasicMaterial({color:0x38bdf8,transparent:true,opacity:0.035,side:THREE.BackSide})));
+}
+
+function buildStars3(){
+  var gw=document.getElementById('globe-wrap');
+  var sc=document.getElementById('stars-canvas');
+  sc.width=gw.clientWidth;sc.height=gw.clientHeight;
+  var sx=sc.getContext('2d');sx.fillStyle='#020810';sx.fillRect(0,0,sc.width,sc.height);
+  for(var i=0;i<900;i++){
+    var x=Math.random()*sc.width,y=Math.random()*sc.height,r=Math.random()*1.3,a=0.25+Math.random()*0.75;
+    sx.fillStyle='rgba(200,228,255,'+a+')';sx.beginPath();sx.arc(x,y,r,0,Math.PI*2);sx.fill();
+  }
+}
+
+function buildSatMesh3(color){
+  var grp=new THREE.Group(),c=new THREE.Color(color);
+  var bm=new THREE.MeshPhongMaterial({color:c,emissive:c,emissiveIntensity:0.7,shininess:50});
+  grp.add(new THREE.Mesh(new THREE.BoxGeometry(0.045,0.028,0.028),bm));
+  var pm=new THREE.MeshPhongMaterial({color:c,transparent:true,opacity:0.75,emissive:c,emissiveIntensity:0.3});
+  var pL=new THREE.Mesh(new THREE.BoxGeometry(0.1,0.002,0.032),pm);pL.position.x=-0.073;grp.add(pL);
+  var pR=pL.clone();pR.position.x=0.073;grp.add(pR);
+  grp.add(new THREE.Mesh(new THREE.SphereGeometry(0.06,12,12),new THREE.MeshBasicMaterial({color:c,transparent:true,opacity:0.22})));
+  return grp;
+}
+
+function ll2v3(lat,lon,r){
+  var phi=(90-lat)*Math.PI/180,tht=(lon+180)*Math.PI/180;
+  return new THREE.Vector3(-r*Math.sin(phi)*Math.cos(tht),r*Math.cos(phi),r*Math.sin(phi)*Math.sin(tht));
+}
+
+function updateTrail3(id,positions){
+  trailLines3[id].forEach(function(l){globeGroup3.remove(l);});trailLines3[id]=[];
+  if(positions.length<2)return;
+  var color=id==='a'?0x38bdf8:0xfbbf24;
+  var pts=positions.map(function(p){return ll2v3(p.lat,p.lon,EARTH_R+0.02+p.alt/6371*EARTH_R*0.15);});
+  var geo=new THREE.BufferGeometry().setFromPoints(pts);
+  var line=new THREE.Line(geo,new THREE.LineBasicMaterial({color,transparent:true,opacity:0.5}));
+  globeGroup3.add(line);trailLines3[id].push(line);
+}
+
+function findNextPass3(id){
+  if(!sr[id])return;
+  var d=new Date(BASE.getTime()+tOff*1000),end=new Date(d.getTime()+7*86400000),found=null;
+  function chunk(){
+    var count=0;
+    while(d<end&&count<200){
+      var el=getLookEl(sr[id],d,obsLat,obsLon);
+      if(el!==null&&el>5){found=new Date(d);break;}
+      d=new Date(d.getTime()+15000);count++;
+    }
+    if(found){nextPass3[id]=found;passSearchDone3[id]=true;}
+    else if(d<end)setTimeout(chunk,0);
+    else{nextPass3[id]=null;passSearchDone3[id]=true;}
+  }
+  chunk();
+}
+function refreshPasses3(){
+  passSearchDone3={a:false,b:false};nextPass3={a:null,b:null};
+  findNextPass3('a');findNextPass3('b');
+}
+
+function buildTouchHandlers(){
+  var gw=document.getElementById('globe-wrap');
+  function startD(x,y){isDragging3=true;autoRotate3=false;prevTouch3={x,y};rotVelX3=rotVelY3=0;}
+  function moveD(x,y){
+    if(!isDragging3)return;
+    var dx=x-prevTouch3.x,dy=y-prevTouch3.y;
+    globeGroup3.rotation.y+=dx*0.005;globeGroup3.rotation.x+=dy*0.005;
+    globeGroup3.rotation.x=Math.max(-Math.PI/2,Math.min(Math.PI/2,globeGroup3.rotation.x));
+    rotVelY3=dx*0.005;rotVelX3=dy*0.005;prevTouch3={x,y};
+  }
+  function endD(){isDragging3=false;}
+  gw.addEventListener('mousedown',function(e){startD(e.clientX,e.clientY);});
+  gw.addEventListener('mousemove',function(e){moveD(e.clientX,e.clientY);});
+  gw.addEventListener('mouseup',endD);gw.addEventListener('mouseleave',endD);
+  gw.addEventListener('touchstart',function(e){if(e.touches.length===1)startD(e.touches[0].clientX,e.touches[0].clientY);},{passive:true});
+  gw.addEventListener('touchmove',function(e){if(e.touches.length===1)moveD(e.touches[0].clientX,e.touches[0].clientY);},{passive:true});
+  gw.addEventListener('touchend',function(e){endD();if(e.changedTouches.length===1)handleTap3(e.changedTouches[0].clientX,e.changedTouches[0].clientY);});
+  gw.addEventListener('click',function(e){handleTap3(e.clientX,e.clientY);});
+}
+
+function handleTap3(cx,cy){
+  var popup=document.getElementById('sat-popup');
+  for(var id of ['a','b']){
+    var s=satScreen3[id],dx=cx-s.x,dy=cy-s.y;
+    if(Math.sqrt(dx*dx+dy*dy)<44){showPopup3(id,cx,cy);return;}
+  }
+  popup.style.display='none';popupVisible3=false;popupId3=null;
+}
+function showPopup3(id,cx,cy){
+  popupId3=id;popupVisible3=true;
+  var popup=document.getElementById('sat-popup');
+  var color=id==='a'?'var(--c1a)':'var(--c1b)';
+  document.getElementById('pp-title').textContent='SAOCOM-1'+(id==='a'?'A':'B');
+  document.getElementById('pp-title').style.color=color;
+  popup.style.display='block';
+  var gw=document.getElementById('globe-wrap');
+  var wW=gw.clientWidth,wH=gw.clientHeight,pW=170,pH=120;
+  var px=Math.min(cx+14,wW-pW-8),py=Math.max(cy-pH/2,8);
+  if(py+pH>wH-8)py=wH-pH-8;
+  popup.style.left=px+'px';popup.style.top=py+'px';
+}
+function updatePopup3(t){
+  if(!popupVisible3||!popupId3)return;
+  var pos=getSatPos(sr[popupId3],t);if(!pos)return;
+  document.getElementById('pp-lat').textContent=pos.lat.toFixed(2)+'°';
+  document.getElementById('pp-lon').textContent=pos.lon.toFixed(2)+'°';
+  document.getElementById('pp-alt').textContent=Math.round(pos.alt)+' km';
+  document.getElementById('pp-vel').textContent=Math.round(pos.vel*3600)+' km/h';
+}
+
+function resizeMobile(){
+  if(!renderer3)return;
+  var gw=document.getElementById('globe-wrap');
+  var W=gw.clientWidth,H=gw.clientHeight;
+  renderer3.setSize(W,H);camera3.aspect=W/H;camera3.updateProjectionMatrix();
+  buildStars3();
+}
+
+function renderMobile(t){
+  if(!threeReady||activeView!=='mobile')return;
+
+  /* Panel data */
+  ['a','b'].forEach(function(id){
+    var satrec=sr[id];if(!satrec)return;
+    var pos=getSatPos(satrec,t);if(!pos)return;
+    setEl('m-'+id+'-lat',pos.lat,'°');setEl('m-'+id+'-lon',pos.lon,'°');
+    setEl('m-'+id+'-alt',pos.alt,' km',0);setEl('m-'+id+'-vel',pos.vel*3600,' km/h',0);
+    /* Countdown */
+    var cdEl=document.getElementById('cd-'+id);
+    var np=nextPass3[id];
+    if(np){
+      var diff=np.getTime()-t.getTime();
+      cdEl.textContent=fmtCountdown(diff);
+      var el=getLookEl(satrec,t,obsLat,obsLon);
+      cdEl.style.color=(el!==null&&el>5)?'var(--green)':'var(--bright)';
+    }else{cdEl.textContent=passSearchDone3[id]?'>7d':'…';}
+  });
+
+  document.getElementById('sim-warn-m').style.display=Math.abs(tOff)>60?'block':'none';
+  updatePopup3(t);
+
+  /* Globe rotation */
+  if(!isDragging3){
+    if(autoRotate3)globeGroup3.rotation.y+=0.0008;
+    else{rotVelX3*=0.92;rotVelY3*=0.92;globeGroup3.rotation.y+=rotVelY3;globeGroup3.rotation.x+=rotVelX3;
+      globeGroup3.rotation.x=Math.max(-Math.PI/2,Math.min(Math.PI/2,globeGroup3.rotation.x));}
+  }
+
+  /* Satélites */
+  ['a','b'].forEach(function(id){
+    var satrec=sr[id];if(!satrec)return;
+    var pos=getSatPos(satrec,t);if(!pos)return;
+    var altR=EARTH_R+0.025+pos.alt/6371*EARTH_R*0.15;
+    var vec=ll2v3(pos.lat,pos.lon,altR);
+    if(!satMeshes3[id]){satMeshes3[id]=buildSatMesh3(id==='a'?0x38bdf8:0xfbbf24);globeGroup3.add(satMeshes3[id]);}
+    satMeshes3[id].position.copy(vec);
+    satMeshes3[id].lookAt(vec.clone().multiplyScalar(2));
+    var wp=new THREE.Vector3();satMeshes3[id].getWorldPosition(wp);
+    projVec3.copy(wp);projVec3.project(camera3);
+    var gw=document.getElementById('globe-wrap');
+    satScreen3[id]={x:(projVec3.x*0.5+0.5)*gw.clientWidth,y:(-projVec3.y*0.5+0.5)*gw.clientHeight};
+    if(frameCount%12===0){
+      var trail=[];
+      for(var m=-50;m<=60;m+=2){var d2=new Date(t.getTime()+m*60000),p2=getSatPos(satrec,d2);if(p2)trail.push(p2);}
+      updateTrail3(id,trail);
+    }
+  });
+
+  renderer3.render(scene3,camera3);
+}
+
+/* ══════════════════════════════════════════════════
+   LOOP PRINCIPAL — maneja ambas vistas
+   ══════════════════════════════════════════════════ */
+var desktopTimer=null;
+
+function mainLoop(ts){
+  requestAnimationFrame(mainLoop);
+
+  /* Avance tiempo compartido */
+  if(scrubVel!==0&&lastTs!==null)tOff+=(ts-lastTs)/1000*scrubVel;
+  if(playing&&lastTs!==null)tOff+=(ts-lastTs)/1000*scrubVel;
+  lastTs=ts;
+
+  var t=new Date(BASE.getTime()+tOff*1000);
+
+  /* Relojes header */
+  var iso=t.toISOString();
+  document.getElementById('utcclk').textContent=iso.slice(11,19)+' UTC';
+  var ls=t.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  var ld=t.toLocaleDateString([],{day:'2-digit',month:'2-digit'});
+  var tz=(Intl.DateTimeFormat().resolvedOptions().timeZone||'local').split('/').pop().replace('_',' ');
+  document.getElementById('localclk').textContent=ld+' '+ls+' '+tz;
+
+  /* Desktop timelbl */
+  document.getElementById('timelbl').textContent=iso.slice(0,10)+'  '+iso.slice(11,19)+' UTC';
+  document.getElementById('localtlbl').textContent=ld+' '+ls+' '+tz;
+
+  if(activeView==='desktop'){
+    renderDesktop(t);
+    frameCount++;
+  } else {
+    renderMobile(t);
+    frameCount++;
+  }
+}
+
+/* Desktop play controls */
+window.togglePlay=function(){
+  playing=!playing;lastTs=null;
+  document.getElementById('playbtn').textContent=playing?'⏸':'▶';
+};
+window.onScrub=function(v){
+  var val=parseInt(v),sign=val>=0?1:-1,norm=val/100;
+  scrubVel=sign*norm*norm*600;lastTs=null;
+  playing=true;document.getElementById('playbtn').textContent='⏸';
+};
+window.snapCenter=function(){
+  document.getElementById('scrubber').value=0;scrubVel=0;playing=false;lastTs=null;
+  document.getElementById('playbtn').textContent='▶';
+  passCache={a:null,b:null};refreshPasses3();renderDesktopPasses();
+};
+/* Mobile speed controls */
+window.onSpeedChange=function(v){
+  var val=parseInt(v),sign=val>=0?1:-1,norm=val/100;
+  scrubVel=sign*norm*norm*600;lastTs=null;
+};
+window.snapSpeed=function(){
+  document.getElementById('speed-slider').value=0;scrubVel=0;lastTs=null;
+  passCache={a:null,b:null};refreshPasses3();
+};
+window.goNow=function(){
+  tOff=0;scrubVel=0;playing=false;lastTs=null;
+  var sc=document.getElementById('scrubber');if(sc)sc.value=0;
+  var ss=document.getElementById('speed-slider');if(ss)ss.value=0;
+  if(document.getElementById('playbtn'))document.getElementById('playbtn').textContent='▶';
+  passCache={a:null,b:null};refreshPasses3();renderDesktopPasses();
+};
+
+window.addEventListener('resize',function(){
+  isMobile=window.innerWidth<768;
+  if(activeView==='mobile')resizeMobile();
+  else if(leafletMap)leafletMap.invalidateSize();
+});
+
+/* ── GEOLOCALIZACIÓN ── */
+if(navigator.geolocation){
+  navigator.geolocation.getCurrentPosition(function(p){
+    obsLat=p.coords.latitude;obsLon=p.coords.longitude;
+    passCache={a:null,b:null};
+    if(obsMarker)obsMarker.setLatLng([obsLat,obsLon]);
+    refreshPasses3();renderDesktopPasses();
+  },function(){},{timeout:8000});
+}
+
+/* ── ARRANQUE ── */
+var msg=function(t){document.getElementById('loadmsg').textContent=t;};
+applyView(activeView);
+initLeaflet();
+initThree();
+
+msg('Cargando países…');
+fetch('https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_110m_land.geojson')
+  .then(function(r){return r.json();})
+  .then(function(geo){buildEarth3(geo);buildStars3();msg('Descargando TLE 1A…');loadTLEs();})
+  .catch(function(){buildEarth3(null);buildStars3();msg('Descargando TLE 1A…');loadTLEs();});
+
+function loadTLEs(){
+  fetchTLE(43641,TLE_FB.a,'a',function(tleA){
+    tleRaw.a=tleA;sr.a=satellite.twoline2satrec(tleA[0],tleA[1]);
+    msg('SAOCOM-1A ✓  Descargando 1B…');
+    fetchTLE(46265,TLE_FB.b,'b',function(tleB){
+      tleRaw.b=tleB;sr.b=satellite.twoline2satrec(tleB[0],tleB[1]);
+      document.getElementById('overlay').style.display='none';
+      resizeMobile();
+      refreshPasses3();
+      renderDesktopPasses();
+      requestAnimationFrame(mainLoop);
+    });
+  });
+}
+</script>
+</body>
+</html>
