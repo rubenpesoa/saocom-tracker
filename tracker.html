@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>SAOCOM Tracker</title>
+<title>SAOCOM — Tracker</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=DM+Mono:wght@300;400&display=swap');
@@ -21,16 +21,17 @@
   --bright:#bdd8f0;
   --green:#34d399;
   --red:#f87171;
+  --accent-back:#c8410a;
 }
 
 html,body{width:100%;height:100%;background:var(--bg);color:var(--bright);
   font-family:'DM Mono',monospace;display:flex;flex-direction:column;overflow:hidden}
 
-/* ══════════════════ HEADER COMPARTIDO ══════════════════ */
+/* ══ HEADER ══ */
 #header{
   flex-shrink:0;display:flex;align-items:center;gap:10px;
   padding:7px 16px;background:var(--panel);
-  border-bottom:1px solid var(--border2);z-index:1000;flex-wrap:wrap;
+  border-bottom:2px solid var(--accent-back);z-index:1000;flex-wrap:wrap;
 }
 #header h1{font-family:'Orbitron',sans-serif;font-weight:900;
   font-size:clamp(10px,1.6vw,15px);color:var(--bright);letter-spacing:5px;white-space:nowrap}
@@ -45,6 +46,19 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--bright);
   color:var(--bright);letter-spacing:2px;white-space:nowrap}
 #localclk{font-size:8px;color:var(--text);letter-spacing:1px;margin-top:1px}
 
+/* ── Botón volver al inicio ── */
+#btn-home{
+  display:flex;align-items:center;gap:5px;
+  text-decoration:none;
+  font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.5px;
+  color:rgba(200,65,10,0.7);
+  border:1px solid rgba(200,65,10,0.25);
+  border-radius:3px;padding:3px 10px;
+  transition:all .2s;white-space:nowrap;flex-shrink:0;
+}
+#btn-home:hover{color:var(--accent-back);border-color:rgba(200,65,10,0.6);background:rgba(200,65,10,0.06);}
+#btn-home::before{content:'←';font-size:11px;}
+
 /* Toggle vista */
 #view-toggle{
   background:transparent;border:1px solid var(--border2);
@@ -55,15 +69,12 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--bright);
 }
 #view-toggle:hover,#view-toggle:active{border-color:var(--c1a);color:var(--c1a)}
 
-/* ══════════════════ CONTENEDORES DE VISTA ══════════════════ */
+/* ══ CONTENEDORES DE VISTA ══ */
 #app{flex:1;display:flex;overflow:hidden;min-height:0;position:relative}
-
-/* Vista desktop */
 #view-desktop{width:100%;height:100%;display:flex}
-/* Vista móvil */
 #view-mobile{width:100%;height:100%;display:flex;flex-direction:column}
 
-/* ══════════════════ DESKTOP — SIDEBAR ══════════════════ */
+/* ══ DESKTOP — SIDEBAR ══ */
 #sidebar{
   width:244px;flex-shrink:0;background:var(--panel);
   border-right:1px solid var(--border);
@@ -92,7 +103,7 @@ table.passes tr:last-child td{border-bottom:none}
   padding:10px 13px 12px;border-top:1px solid var(--border);letter-spacing:.2px;margin-top:auto}
 .disclaimer strong{color:rgba(90,140,180,0.55);letter-spacing:.5px}
 
-/* ══════════════════ DESKTOP — MAPA LEAFLET ══════════════════ */
+/* ══ DESKTOP — MAPA LEAFLET ══ */
 #map-wrap{flex:1;position:relative;min-width:0}
 #map{width:100%;height:100%}
 .leaflet-container{background:#0a1628}
@@ -106,7 +117,7 @@ table.passes tr:last-child td{border-bottom:none}
   color:#fbbf24;font-size:9px;letter-spacing:1px;padding:3px 14px;border-radius:3px;
   z-index:900;display:none;white-space:nowrap;pointer-events:none}
 
-/* ══════════════════ DESKTOP — CONTROLS ══════════════════ */
+/* ══ DESKTOP — CONTROLS ══ */
 #controls-desktop{
   flex-shrink:0;background:var(--panel);border-top:1px solid var(--border2);
   padding:10px 16px;display:flex;align-items:center;gap:10px;z-index:1000;
@@ -131,7 +142,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;
   background:var(--c1a);box-shadow:0 0 8px var(--c1a);border:none;cursor:pointer}
 
-/* ══════════════════ MOBILE — GLOBE ══════════════════ */
+/* ══ MOBILE — GLOBE ══ */
 #globe-wrap{flex:1;position:relative;overflow:hidden;
   background:radial-gradient(ellipse at 50% 42%,#040f20 0%,#020810 100%);
   touch-action:none}
@@ -155,7 +166,7 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;
 #sat-popup .p-lbl{color:var(--text)}
 #sat-popup .p-val{color:var(--bright);font-weight:500}
 
-/* ══════════════════ MOBILE — PANEL ══════════════════ */
+/* ══ MOBILE — PANEL ══ */
 #panel-mobile{flex-shrink:0;background:var(--panel);
   border-top:1px solid var(--border2);padding:10px 14px 14px;
   backdrop-filter:blur(12px)}
@@ -192,7 +203,7 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;
 .ctrl-btn:active{border-color:var(--c1a);color:var(--c1a)}
 .sctrl-lbl{font-size:8px;color:var(--text);white-space:nowrap}
 
-/* ══════════════════ OVERLAY COMPARTIDO ══════════════════ */
+/* ══ OVERLAY ══ */
 #overlay{position:absolute;inset:0;display:flex;flex-direction:column;
   align-items:center;justify-content:center;
   background:rgba(8,14,22,0.97);z-index:2000;gap:16px}
@@ -210,6 +221,7 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;
 
 <!-- ══ HEADER ══ -->
 <div id="header">
+  <a href="index.html" id="btn-home">INICIO</a>
   <h1>SAO<em>COM</em> TRACKER</h1>
   <div class="hdr-right">
     <span class="tle-pill" id="tlep-a">1A: —</span>
@@ -355,11 +367,8 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;
 <script>
 /* ═══════════════════════════════════════════════════════════
    SAOCOM TRACKER — Versión unificada desktop + móvil
-   Detección automática por ancho de pantalla.
-   Botón para alternar vistas manualmente.
    ═══════════════════════════════════════════════════════════ */
 
-/* ── ESTADO COMPARTIDO ── */
 var TLE_FB = {
   a:['1 43641U 18076A   26051.95038859  .00001149  00000-0  15091-3 0  9995',
      '2 43641  97.8873 240.3595 0001355  80.3746 279.7620 14.82150807398887'],
@@ -370,15 +379,14 @@ var TLE_FB = {
 var sr        = {a:null, b:null};
 var tleRaw    = {a:['',''], b:['','']};
 var BASE      = new Date();
-var tOff      = 0;          // offset segundos
-var scrubVel  = 0;          // seg simulados / seg real
+var tOff      = 0;
+var scrubVel  = 0;
 var playing   = false;
 var lastTs    = null;
 var obsLat    = -34.61, obsLon = -58.37;
 var isMobile  = window.innerWidth < 768;
 var activeView = isMobile ? 'mobile' : 'desktop';
 
-/* ── DETECCIÓN Y TOGGLE DE VISTA ── */
 function applyView(v) {
   activeView = v;
   var isM = v === 'mobile';
@@ -394,7 +402,6 @@ window.toggleView = function() {
   applyView(activeView === 'desktop' ? 'mobile' : 'desktop');
 };
 
-/* ── UTILS COMPARTIDOS ── */
 function parseTLElines(txt){
   var lines=txt.replace(/\r/g,'').trim().split('\n').map(function(s){return s.trim();}).filter(Boolean);
   for(var i=0;i<lines.length-1;i++){
@@ -441,7 +448,6 @@ function setEl(id,val,suf,dec){
   el.textContent=(val==null)?'—':(typeof val==='number'?val.toFixed(dec!=null?dec:1):val)+(suf||'');
 }
 
-/* ── TLE FETCH ── */
 function fetchTLE(norad,fb,id,done){
   var pill=document.getElementById('tlep-'+id);
   var tag=id==='a'?'1A':'1B';
@@ -465,9 +471,7 @@ function fetchTLE(norad,fb,id,done){
   });
 }
 
-/* ══════════════════════════════════════════════════
-   VISTA DESKTOP — Leaflet
-   ══════════════════════════════════════════════════ */
+/* ══ VISTA DESKTOP — Leaflet ══ */
 var leafletMap=null, passCache={a:null,b:null};
 var sel='a';
 var trackLayers={a:{past:null,future:null},b:{past:null,future:null}};
@@ -554,7 +558,6 @@ function getTrackSegs(satrec,center){
 
 function footprintRadiusM(altKm){return Math.acos(6371/(6371+altKm))*6371*1000;}
 
-/* Desktop passes */
 function computePasses(satrec,olat,olon,fromDate){
   var passes=[],d=new Date(fromDate),end=new Date(fromDate.getTime()+7*86400000);
   var inPass=false,pStart=null,maxEl=-90,pEnd=null;
@@ -592,23 +595,17 @@ function renderDesktopPasses(){
 
 function renderDesktop(t){
   if(!leafletMap||activeView!=='desktop')return;
-
-  /* Datos sidebar */
   ['a','b'].forEach(function(id){
     var satrec=sr[id];if(!satrec)return;
     var pos=getSatPos(satrec,t);if(!pos)return;
     setEl('d-'+id+'-lat',pos.lat,'°');setEl('d-'+id+'-lon',pos.lon,'°');
     setEl('d-'+id+'-alt',pos.alt,' km',0);setEl('d-'+id+'-vel',pos.vel*3600,' km/h',0);
   });
-
-  /* Noche */
   if(nightPoly){leafletMap.removeLayer(nightPoly);nightPoly=null;}
   try{
     nightPoly=L.polygon(buildNightPolygon(t),{color:'rgba(0,0,0,0)',fillColor:'#0a1628',
       fillOpacity:0.45,weight:0,smoothFactor:1,interactive:false}).addTo(leafletMap);
   }catch(e){}
-
-  /* Satélites */
   ['a','b'].forEach(function(id){
     var satrec=sr[id];if(!satrec)return;
     var meta=META[id],pos=getSatPos(satrec,t);if(!pos)return;
@@ -623,16 +620,12 @@ function renderDesktop(t){
     if(satMarkers[id]){satMarkers[id].setLatLng([clat,pos.lon]);satMarkers[id].setIcon(makeSatIcon(meta.color,id==='a'?'1A':'1B',id===sel));}
     else{satMarkers[id]=L.marker([clat,pos.lon],{icon:makeSatIcon(meta.color,id==='a'?'1A':'1B',id===sel),zIndexOffset:id===sel?1000:0,interactive:true}).addTo(leafletMap);}
   });
-
   if(!obsMarker){obsMarker=L.marker([obsLat,obsLon],{icon:makeObsIcon(),zIndexOffset:500,title:'Observador'}).addTo(leafletMap);}
   else obsMarker.setLatLng([obsLat,obsLon]);
-
   document.getElementById('sim-warn').style.display=Math.abs(tOff)>60?'block':'none';
 }
 
-/* ══════════════════════════════════════════════════
-   VISTA MÓVIL — Three.js Globe
-   ══════════════════════════════════════════════════ */
+/* ══ VISTA MÓVIL — Three.js Globe ══ */
 var threeReady=false;
 var renderer3,scene3,camera3,globeGroup3,earthMesh3;
 var satMeshes3={a:null,b:null},trailLines3={a:[],b:[]};
@@ -835,14 +828,11 @@ function resizeMobile(){
 
 function renderMobile(t){
   if(!threeReady||activeView!=='mobile')return;
-
-  /* Panel data */
   ['a','b'].forEach(function(id){
     var satrec=sr[id];if(!satrec)return;
     var pos=getSatPos(satrec,t);if(!pos)return;
     setEl('m-'+id+'-lat',pos.lat,'°');setEl('m-'+id+'-lon',pos.lon,'°');
     setEl('m-'+id+'-alt',pos.alt,' km',0);setEl('m-'+id+'-vel',pos.vel*3600,' km/h',0);
-    /* Countdown */
     var cdEl=document.getElementById('cd-'+id);
     var np=nextPass3[id];
     if(np){
@@ -852,18 +842,13 @@ function renderMobile(t){
       cdEl.style.color=(el!==null&&el>5)?'var(--green)':'var(--bright)';
     }else{cdEl.textContent=passSearchDone3[id]?'>7d':'…';}
   });
-
   document.getElementById('sim-warn-m').style.display=Math.abs(tOff)>60?'block':'none';
   updatePopup3(t);
-
-  /* Globe rotation */
   if(!isDragging3){
     if(autoRotate3)globeGroup3.rotation.y+=0.0008;
     else{rotVelX3*=0.92;rotVelY3*=0.92;globeGroup3.rotation.y+=rotVelY3;globeGroup3.rotation.x+=rotVelX3;
       globeGroup3.rotation.x=Math.max(-Math.PI/2,Math.min(Math.PI/2,globeGroup3.rotation.x));}
   }
-
-  /* Satélites */
   ['a','b'].forEach(function(id){
     var satrec=sr[id];if(!satrec)return;
     var pos=getSatPos(satrec,t);if(!pos)return;
@@ -882,47 +867,28 @@ function renderMobile(t){
       updateTrail3(id,trail);
     }
   });
-
   renderer3.render(scene3,camera3);
 }
 
-/* ══════════════════════════════════════════════════
-   LOOP PRINCIPAL — maneja ambas vistas
-   ══════════════════════════════════════════════════ */
-var desktopTimer=null;
-
+/* ══ LOOP PRINCIPAL ══ */
 function mainLoop(ts){
   requestAnimationFrame(mainLoop);
-
-  /* Avance tiempo compartido */
   if(scrubVel!==0&&lastTs!==null)tOff+=(ts-lastTs)/1000*scrubVel;
   if(playing&&lastTs!==null)tOff+=(ts-lastTs)/1000*scrubVel;
   lastTs=ts;
-
   var t=new Date(BASE.getTime()+tOff*1000);
-
-  /* Relojes header */
   var iso=t.toISOString();
   document.getElementById('utcclk').textContent=iso.slice(11,19)+' UTC';
   var ls=t.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'});
   var ld=t.toLocaleDateString([],{day:'2-digit',month:'2-digit'});
   var tz=(Intl.DateTimeFormat().resolvedOptions().timeZone||'local').split('/').pop().replace('_',' ');
   document.getElementById('localclk').textContent=ld+' '+ls+' '+tz;
-
-  /* Desktop timelbl */
   document.getElementById('timelbl').textContent=iso.slice(0,10)+'  '+iso.slice(11,19)+' UTC';
   document.getElementById('localtlbl').textContent=ld+' '+ls+' '+tz;
-
-  if(activeView==='desktop'){
-    renderDesktop(t);
-    frameCount++;
-  } else {
-    renderMobile(t);
-    frameCount++;
-  }
+  if(activeView==='desktop'){renderDesktop(t);frameCount++;}
+  else{renderMobile(t);frameCount++;}
 }
 
-/* Desktop play controls */
 window.togglePlay=function(){
   playing=!playing;lastTs=null;
   document.getElementById('playbtn').textContent=playing?'⏸':'▶';
@@ -937,7 +903,6 @@ window.snapCenter=function(){
   document.getElementById('playbtn').textContent='▶';
   passCache={a:null,b:null};refreshPasses3();renderDesktopPasses();
 };
-/* Mobile speed controls */
 window.onSpeedChange=function(v){
   var val=parseInt(v),sign=val>=0?1:-1,norm=val/100;
   scrubVel=sign*norm*norm*600;lastTs=null;
@@ -960,7 +925,6 @@ window.addEventListener('resize',function(){
   else if(leafletMap)leafletMap.invalidateSize();
 });
 
-/* ── GEOLOCALIZACIÓN ── */
 if(navigator.geolocation){
   navigator.geolocation.getCurrentPosition(function(p){
     obsLat=p.coords.latitude;obsLon=p.coords.longitude;
@@ -970,7 +934,6 @@ if(navigator.geolocation){
   },function(){},{timeout:8000});
 }
 
-/* ── ARRANQUE ── */
 var msg=function(t){document.getElementById('loadmsg').textContent=t;};
 applyView(activeView);
 initLeaflet();

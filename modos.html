@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>SAOCOM — Modos SAR</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=DM+Mono:wght@300;400&family=Barlow:wght@800;900&family=Barlow+Condensed:wght@700;800&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;overflow:hidden;background:#0a0f14;font-family:'DM Mono',monospace}
+
+/* ── HEADER ── */
+#hdr{
+  position:fixed;top:0;left:0;right:0;z-index:20;
+  background:rgba(8,10,14,0.97);backdrop-filter:blur(10px);
+  border-bottom:2px solid #c8410a;
+  display:flex;align-items:center;gap:12px;
+}
+
+/* desktop */
+@media(min-width:600px){
+  #hdr{height:46px;padding:0 20px;}
+  #hdr h1{font-family:'Orbitron',sans-serif;font-weight:900;font-size:13px;color:#f0ede8;letter-spacing:4px;white-space:nowrap}
+  #hdr .hsub{font-size:8px;letter-spacing:1.5px;color:#555}
+  #hdr-right{margin-left:auto;display:flex;gap:16px;align-items:center;font-size:8px;color:#555;}
+  #hdr-right .itag{color:#333} #hdr-right .ival{color:#777}
+  #hdr-conae{display:none}
+}
+/* mobile */
+@media(max-width:599px){
+  #hdr{height:44px;padding:0 14px;justify-content:space-between;}
+  #hdr h1{font-family:'Orbitron',sans-serif;font-weight:900;font-size:13px;color:#f0ede8;letter-spacing:3px;}
+  #hdr .hsub{font-size:7px;letter-spacing:1.5px;color:#444;margin-top:2px}
+  #hdr-right{display:none}
+  #hdr-conae{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:2px;color:#c8410a;text-transform:uppercase;}
+}
+
+/* ── Botón volver al inicio ── */
+#btn-home{
+  display:flex;align-items:center;gap:5px;
+  text-decoration:none;flex-shrink:0;
+  font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.5px;
+  color:rgba(200,65,10,0.7);
+  border:1px solid rgba(200,65,10,0.25);
+  border-radius:3px;padding:3px 10px;
+  transition:all .2s;white-space:nowrap;
+}
+#btn-home:hover{color:#c8410a;border-color:rgba(200,65,10,0.6);background:rgba(200,65,10,0.06);}
+#btn-home::before{content:'←';font-size:11px;}
+@media(max-width:599px){
+  #btn-home{font-size:8px;padding:2px 8px;}
+}
+
+#cv{position:fixed;left:0;right:0;bottom:0;z-index:1;display:block}
+@media(min-width:600px){#cv{top:46px}}
+@media(max-width:599px){#cv{top:44px}}
+
+/* ── DESKTOP: panel de texto derecha ── */
+#info-panel{
+  position:fixed;
+  z-index:30;pointer-events:none;
+}
+@media(min-width:600px){
+  #info-panel{
+    bottom:60px;right:60px;
+    text-align:right;
+    display:flex;flex-direction:column;align-items:flex-end;gap:4px;
+  }
+}
+@media(max-width:599px){
+  #info-panel{
+    bottom:0;left:0;right:0;
+    padding:20px 24px 32px;
+    background:linear-gradient(to top, rgba(5,8,14,0.95) 60%, rgba(5,8,14,0) 100%);
+  }
+}
+
+.info-line{overflow:hidden;white-space:nowrap;opacity:0;margin-bottom:2px;}
+.info-line-inner{display:inline-block;}
+
+/* Tamaños desktop */
+@media(min-width:600px){
+  .il-eyebrow{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:6px;color:#fff;text-transform:uppercase;text-shadow:0 0 18px rgba(255,255,255,0.3),0 2px 8px rgba(0,0,0,0.9);}
+  .il-title{font-family:'Barlow',sans-serif;font-size:64px;font-weight:900;letter-spacing:6px;color:#fff;text-transform:uppercase;text-shadow:0 0 40px rgba(255,255,255,0.15),0 2px 16px rgba(0,0,0,0.95);}
+  .il-title em{color:#c8410a;font-style:normal;}
+  .il-sats{font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700;letter-spacing:3px;color:#fff;text-shadow:0 1px 8px rgba(0,0,0,0.95);}
+  .il-desc{font-family:'DM Mono',monospace;font-size:12px;letter-spacing:0.8px;color:#fff;line-height:1.7;text-shadow:0 1px 8px rgba(0,0,0,0.95);}
+  .il-conae{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:3px;color:#fff;text-shadow:0 1px 6px rgba(0,0,0,0.95);}
+  .il-industria{font-family:'Orbitron',sans-serif;font-size:16px;font-weight:900;letter-spacing:5px;color:#e8c840;text-shadow:0 0 28px rgba(232,200,64,0.8),0 2px 12px rgba(0,0,0,0.95);}
+}
+/* Tamaños mobile */
+@media(max-width:599px){
+  .il-eyebrow{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:5px;color:#fff;text-transform:uppercase;text-shadow:0 1px 6px rgba(0,0,0,0.9);opacity:0.7;}
+  .il-title{font-family:'Barlow',sans-serif;font-size:44px;font-weight:900;letter-spacing:3px;color:#fff;text-transform:uppercase;text-shadow:0 2px 16px rgba(0,0,0,0.95);line-height:1;}
+  .il-sats{font-family:'Orbitron',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;color:#fff;text-shadow:0 1px 6px rgba(0,0,0,0.95);opacity:0.85;}
+  .il-desc{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.5px;color:#fff;line-height:1.6;text-shadow:0 1px 6px rgba(0,0,0,0.95);opacity:0.75;white-space:normal!important;}
+  .il-conae{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2.5px;color:#fff;opacity:0.5;text-shadow:0 1px 4px rgba(0,0,0,0.9);}
+  .il-industria{font-family:'Orbitron',sans-serif;font-size:12px;font-weight:900;letter-spacing:4px;color:#e8c840;text-shadow:0 0 20px rgba(232,200,64,0.7),0 2px 10px rgba(0,0,0,0.95);}
+  .info-line{margin-bottom:3px;}
+}
+
+/* ── MOBILE ONLY UI ── */
+#mode-pill{
+  position:fixed;top:56px;left:50%;transform:translateX(-50%);
+  z-index:30;
+  background:rgba(8,10,14,0.82);backdrop-filter:blur(10px);
+  border:1px solid rgba(255,255,255,0.12);border-radius:20px;
+  padding:5px 18px;
+  font-family:'Orbitron',sans-serif;font-size:9px;font-weight:700;
+  letter-spacing:3px;color:#fff;text-transform:uppercase;
+  opacity:0;transition:opacity 0.4s;white-space:nowrap;
+}
+#mode-pill.visible{opacity:1}
+#mode-pill .pill-dot{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:6px;vertical-align:middle;background:#c8410a;box-shadow:0 0 8px #c8410a;}
+#swath-info{
+  position:fixed;top:58px;right:12px;
+  z-index:30;display:flex;flex-direction:column;gap:5px;
+  opacity:0;transition:opacity 0.5s;
+}
+#swath-info.visible{opacity:1}
+.swath-chip{display:flex;align-items:center;gap:6px;background:rgba(5,8,14,0.75);backdrop-filter:blur(8px);border-radius:4px;padding:4px 8px;border-left:2px solid;}
+.swath-chip .sc-label{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:1.5px;color:#fff;opacity:0.8;}
+.swath-chip .sc-km{font-family:'Orbitron',monospace;font-size:8px;font-weight:700;color:#fff;opacity:0.5;}
+
+/* Ocultar elementos exclusivos en contexto incorrecto */
+@media(min-width:600px){
+  #mode-pill, #swath-info{display:none!important}
+}
+</style>
+</head>
+<body>
+
+<div id="hdr">
+  <a href="index.html" id="btn-home">INICIO</a>
+  <div>
+    <h1 id="hdr-title">SAOCOM</h1>
+    <div class="hsub" id="hdr-sub">Dual-Pol &amp; Quad-Pol · Vista simultánea · CONAE Argentina</div>
+  </div>
+  <div id="hdr-conae">MODOS SAR</div>
+  <div id="hdr-right">
+    <span><span class="itag">SM </span><span class="ival">74 km</span></span>
+    <span><span class="itag">TN </span><span class="ival">444 km</span></span>
+    <span><span class="itag">TW </span><span class="ival">888 km</span></span>
+  </div>
+</div>
+
+<!-- Mobile only -->
+<div id="mode-pill"><span class="pill-dot"></span><span id="mode-text">STRIPMAP</span></div>
+<div id="swath-info">
+  <div class="swath-chip" style="border-color:#f87060"><span class="sc-label">STRIPMAP</span><span class="sc-km">74 km</span></div>
+  <div class="swath-chip" style="border-color:#4466cc"><span class="sc-label">TOPSAR N</span><span class="sc-km">444 km</span></div>
+  <div class="swath-chip" style="border-color:#186038"><span class="sc-label">TOPSAR W</span><span class="sc-km">888 km</span></div>
+</div>
+
+<!-- Texto animado -->
+<div id="info-panel">
+  <div class="info-line" id="il0"><span class="info-line-inner il-eyebrow">Constelación</span></div>
+  <div class="info-line" id="il1"><span class="info-line-inner il-title">SAOCOM</span></div>
+  <div class="info-line" id="il2"><span class="info-line-inner il-sats">SAOCOM 1A &amp; SAOCOM 1B</span></div>
+  <div class="info-line" id="il3"><span class="info-line-inner il-desc">Satélites Argentinos de Observación con Microondas</span></div>
+  <div class="info-line" id="il4"><span class="info-line-inner il-desc">Polarización simple, dual y cuádruple</span></div>
+  <div class="info-line" id="il5"><span class="info-line-inner il-conae">Diseñado por CONAE</span></div>
+  <div class="info-line" id="il6"><span class="info-line-inner il-industria">Industria Argentina</span></div>
+</div>
+
+<canvas id="cv"></canvas>
+
+<script>
+var isMobile = window.innerWidth < 600;
+
+if(!isMobile){
+  document.getElementById('hdr-title').textContent = 'SAOCOM — MODOS SAR';
+  document.getElementById('hdr-sub').textContent = 'Dual-Pol & Quad-Pol · Vista simultánea · CONAE Argentina';
+}
+
+var canvas = document.getElementById('cv');
+var ctx    = canvas.getContext('2d');
+var W, H;
+var HDR_H  = isMobile ? 44 : 46;
+
+function resize(){
+  W = canvas.width  = window.innerWidth;
+  H = canvas.height = window.innerHeight - HDR_H;
+}
+resize();
+window.addEventListener('resize', function(){
+  isMobile = window.innerWidth < 600;
+  HDR_H = isMobile ? 44 : 46;
+  resize();
+});
+
+var ISO_ANGLE = Math.PI / 6;
+var originX, originY, ISO_SCALE;
+
+function project(wx, wy, wz){
+  var px = (wx - wz) * Math.cos(ISO_ANGLE);
+  var py = (wx + wz) * Math.sin(ISO_ANGLE) - wy * 0.85;
+  return { x: originX + px * ISO_SCALE, y: originY + py * ISO_SCALE };
+}
+
+var SAT_SPEED = isMobile ? 40 : 50;
+var SAT_Y     = isMobile ? 100 : 140;
+var SCALE     = isMobile ? 0.38 : 0.42;
+
+var SM_LEN = Math.round(74  * SCALE);
+var TN_LEN = Math.round(444 * SCALE);
+var TW_LEN = TN_LEN * 2;
+
+var P1_LEN = isMobile ? 20 : 25;
+var P2_LEN = isMobile ? 20 : 25;
+var PRE_LEN  = isMobile ? 40 : 50;
+var POST_LEN = isMobile ? 80 : 100;
+
+var Z_SM_END   =  TN_LEN/2 + P1_LEN;
+var Z_P1_END   =  TN_LEN/2;
+var Z_TN_END   = -TN_LEN/2;
+var Z_P2_END   = -(TN_LEN/2 + P2_LEN);
+var Z_TW_END   = -(TN_LEN/2 + P2_LEN + TW_LEN);
+var SAT_Z_START = Z_SM_END + SM_LEN + PRE_LEN;
+var SAT_Z_END   = Z_TW_END - POST_LEN;
+
+var XSEP = 420;
+var SM_COLS = ['#f87060','#f0a040','#e8d840','#70c840','#40b8a0','#4090e8','#7850d8','#b848c8','#e84898'];
+
+function buildSM(nadirX, widths){
+  var sw = [], x = nadirX + (isMobile ? 20 : 30);
+  for(var i = 0; i < widths.length; i++){
+    sw.push({id:String(i+1), x0:x, x1:x+widths[i], col:SM_COLS[i]});
+    x += widths[i];
+  }
+  return { near: nadirX + (isMobile ? 20 : 30), far: x, sw: sw };
+}
+
+var SATS;
+if(isMobile){
+  SATS = {
+    solo: {
+      nadirX: 0, col: '#1a9adc',
+      SM: buildSM(0, [28,24,21,18,16,14,12,11,10]),
+      TN: { sw:[{x0:20,x1:90,col:'#2255cc',alpha:0.65},{x0:90,x1:140,col:'#6030a8',alpha:0.65}]},
+      TW: { sw:[{x0:20,x1:180,col:'#186038',alpha:0.42}]}
+    }
+  };
+} else {
+  SATS = {
+    dual: {
+      nadirX: 0, col: '#1a9adc',
+      SM: buildSM(0, [32,28,25,22,20,18,16,14,12]),
+      TN: { sw:[{x0:30,x1:120,col:'#2255cc',alpha:0.65},{x0:120,x1:185,col:'#6030a8',alpha:0.65}]},
+      TW: { sw:[{x0:30,x1:215,col:'#186038',alpha:0.42}]}
+    },
+    quad: {
+      nadirX: XSEP, col: '#e8520a',
+      SM: buildSM(XSEP, [18,16,14,12,11,10,9,8,7]),
+      TN: { sw:[{x0:XSEP+30,x1:XSEP+80,col:'#2255cc',alpha:0.65},{x0:XSEP+80,x1:XSEP+115,col:'#6030a8',alpha:0.65}]},
+      TW: { sw:[{x0:XSEP+30,x1:XSEP+140,col:'#186038',alpha:0.42}]}
+    }
+  };
+}
+
+function makeState(){
+  return {
+    satZ:SAT_Z_START, prevZ:SAT_Z_START,
+    stripes:[], groundLabels:[],
+    smStripes:{}, smLblDone:{}, smModeDone:false,
+    tnStripes:[], tnModeDone:false,
+    twIdx:-1, twModeDone:false
+  };
+}
+
+var states = {};
+for(var k in SATS) states[k] = makeState();
+var satZ = SAT_Z_START;
+var lastTime = null;
+var currentMode = '';
+
+function getZone(z){
+  if(z > Z_SM_END) return 'SM';
+  if(z > Z_P1_END) return 'P1';
+  if(z > Z_TN_END) return 'TN';
+  if(z > Z_P2_END) return 'P2';
+  if(z > Z_TW_END) return 'TW';
+  return 'COAST';
+}
+
+function resetAll(){
+  satZ = SAT_Z_START;
+  for(var k in SATS) states[k] = makeState();
+}
+
+var pill     = document.getElementById('mode-pill');
+var pillText = document.getElementById('mode-text');
+var modeLabels = {SM:'STRIPMAP', TN:'TOPSAR NARROW', TW:'TOPSAR WIDE', P1:'', P2:'', COAST:''};
+var modeCols   = {SM:'#f87060', TN:'#4466cc', TW:'#40c878'};
+
+function updateModePill(zone){
+  if(!isMobile) return;
+  if(zone === currentMode) return;
+  currentMode = zone;
+  var label = modeLabels[zone] || '';
+  if(label){
+    pillText.textContent = label;
+    pill.querySelector('.pill-dot').style.background  = modeCols[zone] || '#c8410a';
+    pill.querySelector('.pill-dot').style.boxShadow   = '0 0 8px ' + (modeCols[zone] || '#c8410a');
+    pill.classList.add('visible');
+  } else {
+    pill.classList.remove('visible');
+  }
+}
+
+function tickSat(key, newZ){
+  var pd = SATS[key], st = states[key];
+  var zone = getZone(newZ), prev = st.prevZ;
+  if(isMobile) updateModePill(zone);
+  var labelOffset = isMobile ? 40 : 50;
+  var smSize  = isMobile ? 10 : 13;
+  var tnSize  = isMobile ? 9  : 11;
+  var twSize  = isMobile ? 9  : 11;
+  var sxSize  = isMobile ? 8  : 10;
+  var smPush  = isMobile ? 3 : 4;
+
+  if(zone === 'SM'){
+    if(!st.smModeDone){
+      st.smModeDone = true;
+      st.groundLabels.push({text:'STRIPMAP', wx:pd.nadirX-10, wz:newZ+labelOffset, size:smSize, col:'#ffffff', tag:'sm', nadirX:pd.nadirX});
+    }
+    st.groundLabels.forEach(function(l){ if(l.tag==='sm') l.wz = newZ+labelOffset; });
+    pd.SM.sw.forEach(function(sw){
+      if(st.smStripes[sw.id] === undefined){
+        st.stripes.push({x0:sw.x0, x1:sw.x1, zS:prev, zE:newZ, col:sw.col, alpha:0.85});
+        st.smStripes[sw.id] = st.stripes.length - 1;
+        if(!st.smLblDone[sw.id]){
+          st.smLblDone[sw.id] = true;
+          st.groundLabels.push({text:'S'+sw.id, wx:(sw.x0+sw.x1)/2, wz:prev+smPush, size:sxSize, col:'#ffffff', tag:'sx'});
+        }
+      } else { st.stripes[st.smStripes[sw.id]].zE = newZ; }
+    });
+  }
+
+  if(zone === 'TN'){
+    if(!st.tnModeDone){
+      st.tnModeDone = true;
+      st.groundLabels.push({text: isMobile ? 'TOPSAR N' : 'TOPSAR NARROW', wx:pd.nadirX-10, wz:newZ+labelOffset-10, size:tnSize, col:'#ffffff', tag:'tn', nadirX:pd.nadirX});
+      pd.TN.sw.forEach(function(sw){
+        st.stripes.push({x0:sw.x0, x1:sw.x1, zS:prev, zE:newZ, col:sw.col, alpha:sw.alpha});
+        st.tnStripes.push(st.stripes.length - 1);
+      });
+    }
+    st.groundLabels.forEach(function(l){ if(l.tag==='tn') l.wz = newZ+(labelOffset-10); });
+    var tnLen = st.stripes[st.tnStripes[0]].zS - newZ;
+    if(tnLen < TN_LEN) st.tnStripes.forEach(function(i){ st.stripes[i].zE = newZ; });
+  }
+
+  if(zone === 'TW'){
+    if(!st.twModeDone){
+      st.twModeDone = true;
+      var tw = pd.TW.sw[0];
+      st.groundLabels.push({text: isMobile ? 'TOPSAR W' : 'TOPSAR WIDE', wx:pd.nadirX-10, wz:newZ+(labelOffset-10), size:twSize, col:'#ffffff', tag:'tw', nadirX:pd.nadirX});
+      st.stripes.push({x0:tw.x0, x1:tw.x1, zS:prev, zE:newZ, col:tw.col, alpha:tw.alpha});
+      st.twIdx = st.stripes.length - 1;
+    }
+    st.groundLabels.forEach(function(l){ if(l.tag==='tw') l.wz = newZ+(labelOffset-10); });
+    var twLen = st.stripes[st.twIdx].zS - newZ;
+    if(twLen < TW_LEN) st.stripes[st.twIdx].zE = newZ;
+  }
+
+  st.prevZ = st.satZ;
+  st.satZ  = newZ;
+}
+
+function drawPoly(pts, fill, stroke, sw){
+  ctx.beginPath();
+  ctx.moveTo(pts[0].x, pts[0].y);
+  for(var i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
+  ctx.closePath();
+  if(fill)  { ctx.fillStyle = fill; ctx.fill(); }
+  if(stroke){ ctx.strokeStyle = stroke; ctx.lineWidth = sw||1; ctx.stroke(); }
+}
+function drawLine(p1, p2, col, w, a){
+  ctx.globalAlpha = a||1; ctx.strokeStyle = col; ctx.lineWidth = w||1;
+  ctx.beginPath(); ctx.moveTo(p1.x,p1.y); ctx.lineTo(p2.x,p2.y); ctx.stroke();
+  ctx.globalAlpha = 1;
+}
+
+function latLonToTile(lat, lon, z){
+  var x = Math.floor((lon + 180) / 360 * Math.pow(2, z));
+  var sinLat = Math.sin(lat * Math.PI / 180);
+  var y = Math.floor((1 - Math.log((sinLat + 1 / Math.cos(lat * Math.PI / 180)) / Math.PI) / (2 * Math.PI)) * Math.pow(2, z) / 2);
+  return { x:x, y:y };
+}
+var TILE_ZOOM  = 8;
+var centerTile = latLonToTile(-36.5, -63.5, TILE_ZOOM);
+var TILE_GRID  = isMobile ? 5 : 7;
+var TILE_PX    = 256;
+var terrainCanvas = document.createElement('canvas');
+terrainCanvas.width  = TILE_PX * TILE_GRID;
+terrainCanvas.height = TILE_PX * TILE_GRID;
+var terrainCtx  = terrainCanvas.getContext('2d');
+terrainCtx.fillStyle = '#2a3c18';
+terrainCtx.fillRect(0, 0, terrainCanvas.width, terrainCanvas.height);
+var tilesLoaded = 0, tilesTotal = TILE_GRID * TILE_GRID, terrainReady = false;
+
+(function loadTiles(){
+  var offX = Math.floor(TILE_GRID/2), offY = Math.floor(TILE_GRID/2);
+  for(var ty = 0; ty < TILE_GRID; ty++){
+    for(var tx = 0; tx < TILE_GRID; tx++){
+      (function(tx, ty){
+        var tileX = centerTile.x - offX + tx;
+        var tileY = centerTile.y - offY + ty;
+        var url = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/'+
+                  TILE_ZOOM+'/'+tileY+'/'+tileX;
+        var img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = function(){
+          terrainCtx.drawImage(img, tx*TILE_PX, ty*TILE_PX, TILE_PX, TILE_PX);
+          tilesLoaded++;
+          if(tilesLoaded === tilesTotal){
+            terrainReady = true;
+            if(isMobile) document.getElementById('swath-info').classList.add('visible');
+          }
+        };
+        img.onerror = function(){
+          terrainCtx.fillStyle = '#2d4418';
+          terrainCtx.fillRect(tx*TILE_PX, ty*TILE_PX, TILE_PX, TILE_PX);
+          tilesLoaded++;
+          if(tilesLoaded === tilesTotal){
+            terrainReady = true;
+            if(isMobile) document.getElementById('swath-info').classList.add('visible');
+          }
+        };
+        img.src = url;
+      })(tx, ty);
+    }
+  }
+})();
+
+function drawBackground(){
+  if(terrainReady){
+    ctx.drawImage(terrainCanvas, 0, 0, W, H);
+  } else {
+    ctx.fillStyle = '#1a2810';
+    ctx.fillRect(0, 0, W, H);
+    ctx.drawImage(terrainCanvas, 0, 0, W, H);
+    ctx.fillStyle = 'rgba(255,255,255,0.45)';
+    ctx.font = 'bold 13px monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText('Cargando imágenes satelitales... '+tilesLoaded+'/'+tilesTotal, W/2, H/2);
+  }
+  ctx.fillStyle = 'rgba(5,8,15,' + (isMobile ? '0.42' : '0.38') + ')';
+  ctx.fillRect(0, 0, W, H);
+}
+
+function drawGround(){
+  var GXMIN = isMobile ? -200 : -500;
+  var GXMAX = isMobile ? 600  : XSEP+700;
+  var zS = SAT_Z_START + (isMobile ? 200 : 300);
+  var zE = SAT_Z_END   - (isMobile ? 200 : 300);
+  var corners = [
+    project(GXMIN,0,zS), project(GXMAX,0,zS),
+    project(GXMAX,0,zE), project(GXMIN,0,zE)
+  ];
+  ctx.save();
+  ctx.beginPath();
+  ctx.moveTo(corners[0].x,corners[0].y);
+  ctx.lineTo(corners[1].x,corners[1].y);
+  ctx.lineTo(corners[2].x,corners[2].y);
+  ctx.lineTo(corners[3].x,corners[3].y);
+  ctx.closePath();
+  var xs = corners.map(function(c){return c.x;}), ys = corners.map(function(c){return c.y;});
+  var bx = Math.min.apply(null,xs)-2, by = Math.min.apply(null,ys)-2;
+  var bw = Math.max.apply(null,xs)-bx+4, bh = Math.max.apply(null,ys)-by+4;
+  ctx.clip();
+  if(terrainReady) ctx.drawImage(terrainCanvas, bx, by, bw, bh);
+  else { ctx.fillStyle='#243818'; ctx.fillRect(bx,by,bw,bh); ctx.drawImage(terrainCanvas,bx,by,bw,bh); }
+  ctx.restore();
+}
+
+function drawStripe(s){
+  var pts = [project(s.x0,0,s.zS),project(s.x1,0,s.zS),project(s.x1,0,s.zE),project(s.x0,0,s.zE)];
+  ctx.globalAlpha = s.alpha; drawPoly(pts, s.col, null); ctx.globalAlpha = 1;
+  ctx.globalAlpha = isMobile ? 0.45 : 0.55;
+  drawPoly(pts, null, '#ffffff', isMobile ? 0.6 : 0.7);
+  ctx.globalAlpha = 1;
+}
+
+function drawSatellite(key, wz){
+  var pd = SATS[key];
+  var nx = pd.nadirX;
+  var c  = project(nx, SAT_Y, wz);
+  var sh = project(nx, 0, wz);
+  var panelW = isMobile ? 24 : 28;
+
+  ctx.globalAlpha = isMobile ? 0.2 : 0.18;
+  ctx.fillStyle = '#000';
+  ctx.beginPath(); ctx.ellipse(sh.x, sh.y, isMobile?12:16, isMobile?5:7, 0, 0, Math.PI*2); ctx.fill();
+  ctx.globalAlpha = 1;
+
+  drawLine(c, sh, '#dd4010', 0.8, 0.2);
+
+  var pl1=project(nx-panelW,SAT_Y,wz), pl2=project(nx-4,SAT_Y,wz);
+  ctx.strokeStyle='#1a2870'; ctx.lineWidth=isMobile?4:5; ctx.globalAlpha=0.9;
+  ctx.beginPath(); ctx.moveTo(pl1.x,pl1.y); ctx.lineTo(pl2.x,pl2.y); ctx.stroke();
+  ctx.strokeStyle='#4466cc'; ctx.lineWidth=isMobile?3:3.5;
+  ctx.beginPath(); ctx.moveTo(pl1.x,pl1.y); ctx.lineTo(pl2.x,pl2.y); ctx.stroke();
+  var pr1=project(nx+4,SAT_Y,wz), pr2=project(nx+panelW,SAT_Y,wz);
+  ctx.strokeStyle='#1a2870'; ctx.lineWidth=isMobile?4:5;
+  ctx.beginPath(); ctx.moveTo(pr1.x,pr1.y); ctx.lineTo(pr2.x,pr2.y); ctx.stroke();
+  ctx.strokeStyle='#4466cc'; ctx.lineWidth=isMobile?3:3.5;
+  ctx.beginPath(); ctx.moveTo(pr1.x,pr1.y); ctx.lineTo(pr2.x,pr2.y); ctx.stroke();
+  ctx.globalAlpha = 1;
+
+  var bz=isMobile?7:8, by2=4;
+  var b0=project(nx-4,SAT_Y-by2,wz-bz), b1=project(nx+4,SAT_Y-by2,wz-bz);
+  var b2=project(nx+4,SAT_Y+by2,wz+bz), b3=project(nx-4,SAT_Y+by2,wz+bz);
+  drawPoly([b0,b1,b2,b3], '#8899bb', '#aabbcc', 0.7);
+
+  var az=isMobile?5:6, ayTop=isMobile?-9:-10;
+  var a0=project(nx+2,SAT_Y+ayTop,wz-az), a1=project(nx+4,SAT_Y+ayTop,wz-az);
+  var a2=project(nx+4,SAT_Y,wz+az),       a3=project(nx+2,SAT_Y,wz+az);
+  drawPoly([a0,a1,a2,a3], '#1e2c3a', '#334455', 0.7);
+
+  if(!isMobile){
+    ctx.save(); ctx.translate(c.x-18, c.y-16);
+    ctx.font = 'bold 9px Orbitron,sans-serif';
+    ctx.fillStyle = pd.col; ctx.textAlign = 'center';
+    ctx.shadowColor = 'rgba(0,0,0,0.9)'; ctx.shadowBlur = 6;
+    ctx.fillText(key === 'dual' ? 'DUAL' : 'QUAD', 0, 0);
+    ctx.restore(); ctx.shadowBlur = 0;
+  }
+
+  var bn = project(pd.SM.near, 0, wz), bf = project(pd.SM.far, 0, wz);
+  drawLine(c, bn, '#ffe060', 1, 0.5);
+  drawLine(c, bf, '#ffe060', 0.7, 0.2);
+  ctx.globalAlpha = 0.05; drawPoly([c,bn,bf], '#ffe060', null); ctx.globalAlpha = 1;
+}
+
+function drawOrbitalTracks(){
+  var zS = SAT_Z_START+60, zE = SAT_Z_END-60;
+  var nadirs = isMobile ? [0] : [0, XSEP];
+  nadirs.forEach(function(nx){
+    drawLine(project(nx,SAT_Y,zS), project(nx,SAT_Y,zE), '#dd4010', 0.8, 0.25);
+    drawLine(project(nx,0,zS),     project(nx,0,zE),     '#dd4010', 0.5, 0.12);
+  });
+}
+
+function drawGroundLabel(gl){
+  var p = project(gl.wx, 0, gl.wz);
+  ctx.save(); ctx.translate(p.x, p.y);
+  var isModeLabel = (gl.tag==='sm'||gl.tag==='tn'||gl.tag==='tw');
+  var angle;
+  if(isModeLabel){
+    var pZ0=project(gl.wx,0,gl.wz), pZ1=project(gl.wx,0,gl.wz-10);
+    angle = Math.atan2(pZ1.y-pZ0.y, pZ1.x-pZ0.x);
+  } else {
+    var pX0=project(gl.wx,0,gl.wz), pX1=project(gl.wx+10,0,gl.wz);
+    angle = Math.atan2(pX1.y-pX0.y, pX1.x-pX0.x);
+  }
+  ctx.rotate(angle);
+  ctx.globalAlpha = isMobile ? 0.9 : 0.95;
+  ctx.fillStyle = gl.col || '#fff';
+  ctx.font = '900 ' + Math.round(gl.size) + 'px Orbitron,sans-serif';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.shadowColor = 'rgba(0,0,0,0.95)'; ctx.shadowBlur = isMobile ? 6 : 7;
+  ctx.fillText(gl.text, 0, 0);
+  ctx.restore(); ctx.globalAlpha = 1; ctx.shadowBlur = 0;
+}
+
+function render(){
+  if(isMobile){
+    ISO_SCALE = W / 520;
+    originX   = W * 0.18;
+    originY   = H * 0.42;
+  } else {
+    ISO_SCALE = Math.min(W, H*1.4) / 1050;
+    originX   = W * 0.22;
+    originY   = H * 0.48;
+  }
+  drawBackground();
+  drawGround();
+  drawOrbitalTracks();
+  var allStripes = [];
+  for(var k in states) allStripes = allStripes.concat(states[k].stripes);
+  allStripes.sort(function(a,b){ return Math.min(a.zS,a.zE)-Math.min(b.zS,b.zE); });
+  allStripes.forEach(drawStripe);
+  for(var k in states) states[k].groundLabels.forEach(drawGroundLabel);
+  for(var k in SATS) drawSatellite(k, satZ);
+}
+
+function animate(ts){
+  requestAnimationFrame(animate);
+  if(!lastTime){ lastTime = ts; }
+  var dt = Math.min((ts - lastTime) / 1000, 0.05);
+  lastTime = ts;
+  var newZ = satZ - SAT_SPEED * dt;
+  if(newZ <= SAT_Z_END){ resetAll(); }
+  else {
+    for(var k in SATS) tickSat(k, newZ);
+    satZ = newZ;
+  }
+  render();
+}
+animate(0);
+</script>
+
+<!-- ── TYPEWRITER ── -->
+<script>
+(function(){
+  var isMob = window.innerWidth < 600;
+  var lines = isMob ? [
+    {id:'il0', delay:800,  dur:350},
+    {id:'il1', delay:1300, dur:550},
+    {id:'il2', delay:2000, dur:450},
+    {id:'il3', delay:2600, dur:600},
+    {id:'il4', delay:3400, dur:600},
+    {id:'il5', delay:4200, dur:400},
+    {id:'il6', delay:4800, dur:550}
+  ] : [
+    {id:'il0', delay:600,  dur:400},
+    {id:'il1', delay:1100, dur:600},
+    {id:'il2', delay:1900, dur:500},
+    {id:'il3', delay:2600, dur:700},
+    {id:'il4', delay:3500, dur:900},
+    {id:'il5', delay:4600, dur:500},
+    {id:'il6', delay:5300, dur:600}
+  ];
+
+  lines.forEach(function(l){
+    var el    = document.getElementById(l.id);
+    var inner = el.querySelector('.info-line-inner');
+    var isDesc = inner.classList.contains('il-desc');
+    el.style.opacity    = '0';
+    el.style.width      = '0px';
+    el.style.overflow   = 'hidden';
+    el.style.whiteSpace = 'nowrap';
+    setTimeout(function(){
+      el.style.opacity = '1';
+      el.style.width   = 'auto';
+      var fullW = inner.scrollWidth + 4;
+      el.style.width = '0px';
+      el.style.transition = 'width ' + l.dur + 'ms cubic-bezier(0.4,0,0.2,1)';
+      requestAnimationFrame(function(){
+        requestAnimationFrame(function(){
+          el.style.width = fullW + 'px';
+          if(isMob && isDesc){
+            setTimeout(function(){
+              el.style.whiteSpace = 'normal';
+              el.style.width = '100%';
+            }, l.dur + 50);
+          }
+        });
+      });
+    }, l.delay);
+  });
+})();
+</script>
+</body>
+</html>

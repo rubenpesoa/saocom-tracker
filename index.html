@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>SAOCOM</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=DM+Mono:wght@300;400&family=Barlow:wght@800;900&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'DM Mono',monospace;}
+
+/* ── ESTRELLAS ── */
+#stars{position:fixed;inset:0;z-index:0;}
+
+/* ── HORIZONTE ── */
+#horizon{
+  position:fixed;bottom:0;left:0;right:0;height:35%;z-index:1;
+  background:linear-gradient(to top,
+    rgba(12,4,2,0.95) 0%,
+    rgba(30,8,4,0.5) 40%,
+    transparent 100%);
+  pointer-events:none;
+}
+
+/* ── CONTENIDO PRINCIPAL ── */
+#content{
+  position:fixed;inset:0;z-index:10;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:0;
+  padding:24px;
+}
+
+/* ── LOGO / TÍTULO ── */
+.logo-wrap{
+  display:flex;flex-direction:column;align-items:center;
+  margin-bottom:48px;
+}
+.logo-eyebrow{
+  font-family:'DM Mono',monospace;
+  font-size:9px;letter-spacing:6px;
+  color:rgba(255,255,255,0.25);
+  text-transform:uppercase;
+  margin-bottom:12px;
+}
+.logo-title{
+  font-family:'Barlow',sans-serif;
+  font-size:clamp(64px,10vw,120px);
+  font-weight:900;letter-spacing:8px;
+  color:#ffffff;text-transform:uppercase;
+  line-height:1;
+  text-shadow:0 0 80px rgba(255,255,255,0.08);
+  opacity:0;
+  transform:translateY(20px);
+  animation:fadeUp 1s cubic-bezier(.2,0,.1,1) 0.4s forwards;
+}
+.logo-sub{
+  font-family:'DM Mono',monospace;
+  font-size:clamp(8px,1.1vw,11px);
+  letter-spacing:4px;color:rgba(255,255,255,0.22);
+  margin-top:14px;text-transform:uppercase;
+  opacity:0;
+  animation:fadeUp 0.8s ease 1.0s forwards;
+}
+.logo-conae{
+  font-family:'Orbitron',sans-serif;
+  font-size:9px;font-weight:700;letter-spacing:5px;
+  color:#c8410a;margin-top:8px;
+  opacity:0;
+  animation:fadeUp 0.8s ease 1.3s forwards;
+}
+
+@keyframes fadeUp{
+  to{opacity:1;transform:translateY(0);}
+}
+
+/* ── SEPARADOR ── */
+.sep{
+  width:1px;height:48px;
+  background:linear-gradient(to bottom,transparent,rgba(255,255,255,0.12),transparent);
+  margin-bottom:48px;
+  opacity:0;
+  animation:fadeIn 0.6s ease 1.6s forwards;
+}
+@keyframes fadeIn{to{opacity:1;}}
+
+/* ── BOTONES ── */
+.nav-buttons{
+  display:flex;flex-direction:column;gap:16px;width:100%;max-width:360px;
+  opacity:0;
+  animation:fadeUp 0.7s ease 1.8s forwards;
+}
+
+.nav-btn{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:18px 24px;
+  background:rgba(255,255,255,0.03);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:8px;
+  text-decoration:none;
+  cursor:pointer;
+  transition:all .25s cubic-bezier(.2,0,.1,1);
+  position:relative;overflow:hidden;
+  backdrop-filter:blur(8px);
+}
+.nav-btn::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,0.04) 0%,transparent 60%);
+  pointer-events:none;
+}
+.nav-btn:hover{
+  background:rgba(255,255,255,0.06);
+  border-color:rgba(255,255,255,0.22);
+  transform:translateX(6px);
+}
+.nav-btn:active{transform:translateX(2px);}
+
+.nav-btn .btn-left{display:flex;flex-direction:column;gap:3px;}
+.nav-btn .btn-label{
+  font-family:'DM Mono',monospace;
+  font-size:8px;letter-spacing:3px;
+  text-transform:uppercase;
+}
+.nav-btn .btn-title{
+  font-family:'Orbitron',sans-serif;
+  font-size:15px;font-weight:900;letter-spacing:3px;
+  color:#ffffff;
+}
+.nav-btn .btn-desc{
+  font-size:9px;color:rgba(255,255,255,0.3);
+  letter-spacing:0.5px;margin-top:2px;
+}
+.nav-btn .btn-arrow{
+  font-size:20px;
+  color:rgba(255,255,255,0.2);
+  transition:color .2s, transform .2s;
+  flex-shrink:0;
+}
+.nav-btn:hover .btn-arrow{
+  color:var(--accent);
+  transform:translateX(4px);
+}
+
+/* Colores individuales */
+.nav-btn.tracker{
+  --accent:#38bdf8;
+  border-left:2px solid rgba(56,189,248,0.4);
+}
+.nav-btn.tracker .btn-label{color:#38bdf8;}
+.nav-btn.tracker:hover{
+  box-shadow:0 0 30px rgba(56,189,248,0.1), inset 0 0 20px rgba(56,189,248,0.03);
+  border-color:rgba(56,189,248,0.35);
+}
+
+.nav-btn.modos{
+  --accent:#e8c840;
+  border-left:2px solid rgba(232,200,64,0.4);
+}
+.nav-btn.modos .btn-label{color:#e8c840;}
+.nav-btn.modos:hover{
+  box-shadow:0 0 30px rgba(232,200,64,0.08), inset 0 0 20px rgba(232,200,64,0.03);
+  border-color:rgba(232,200,64,0.35);
+}
+
+/* ── FOOTER ── */
+#footer{
+  position:fixed;bottom:20px;left:0;right:0;z-index:10;
+  text-align:center;
+  font-size:8px;letter-spacing:2px;
+  color:rgba(255,255,255,0.1);
+  opacity:0;
+  animation:fadeIn 1s ease 2.4s forwards;
+}
+#footer span{color:rgba(255,255,255,0.18);}
+</style>
+</head>
+<body>
+
+<canvas id="stars"></canvas>
+<div id="horizon"></div>
+
+<div id="content">
+
+  <div class="logo-wrap">
+    <div class="logo-eyebrow">Constelación Argentina de Observación Satelital</div>
+    <div class="logo-title">SAOCOM</div>
+    <div class="logo-sub">Satélites Argentinos de Observación con Microondas</div>
+    <div class="logo-conae">CONAE · Industria Argentina</div>
+  </div>
+
+  <div class="sep"></div>
+
+  <div class="nav-buttons">
+
+    <a href="tracker.html" class="nav-btn tracker">
+      <div class="btn-left">
+        <span class="btn-label">En tiempo real</span>
+        <span class="btn-title">TRACKER</span>
+        <span class="btn-desc">Posición orbital en vivo · Próximos pases</span>
+      </div>
+      <span class="btn-arrow">→</span>
+    </a>
+
+    <a href="modos.html" class="nav-btn modos">
+      <div class="btn-left">
+        <span class="btn-label">Simulación SAR</span>
+        <span class="btn-title">MODOS DE ADQUISICIÓN</span>
+        <span class="btn-desc">Stripmap · TopSAR Narrow · TopSAR Wide</span>
+      </div>
+      <span class="btn-arrow">→</span>
+    </a>
+
+  </div>
+
+</div>
+
+<div id="footer">
+  Uso didáctico · TLEs vía <span>CelesTrak</span> · Imágenes <span>Esri World Imagery</span>
+</div>
+
+<script>
+(function(){
+  var c=document.getElementById('stars');
+  var ctx=c.getContext('2d');
+  var W,H,stars=[];
+
+  function resize(){
+    W=c.width=window.innerWidth;
+    H=c.height=window.innerHeight;
+    makeStars();
+  }
+
+  function makeStars(){
+    stars=[];
+    var n=Math.floor(W*H/900);
+    for(var i=0;i<n;i++){
+      var tier=Math.random();
+      stars.push({
+        x:Math.random()*W,
+        y:Math.random()*H,
+        r: tier<0.6 ? Math.random()*0.8+0.2 : tier<0.9 ? Math.random()*1.2+0.6 : Math.random()*1.8+1.0,
+        a: 0.1+Math.random()*0.7,
+        baseA: 0.1+Math.random()*0.6,
+        da: (Math.random()-0.5)*0.003,
+        vx:(Math.random()-0.5)*0.015,
+        vy:(Math.random()-0.5)*0.008
+      });
+    }
+  }
+
+  function draw(){
+    ctx.fillStyle='#000';
+    ctx.fillRect(0,0,W,H);
+
+    stars.forEach(function(s){
+      s.a+=s.da;
+      if(s.a<s.baseA*0.2||s.a>Math.min(s.baseA+0.4,0.95)){s.da*=-1;}
+      s.x+=s.vx; s.y+=s.vy;
+      if(s.x<-2)s.x=W+2;if(s.x>W+2)s.x=-2;
+      if(s.y<-2)s.y=H+2;if(s.y>H+2)s.y=-2;
+
+      if(s.r>1.2){
+        var grd=ctx.createRadialGradient(s.x,s.y,0,s.x,s.y,s.r*4);
+        grd.addColorStop(0,'rgba(200,220,255,'+s.a+')');
+        grd.addColorStop(1,'rgba(200,220,255,0)');
+        ctx.fillStyle=grd;
+        ctx.beginPath();ctx.arc(s.x,s.y,s.r*4,0,Math.PI*2);ctx.fill();
+      }
+
+      ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+      ctx.fillStyle='rgba(210,225,255,'+s.a.toFixed(3)+')';
+      ctx.fill();
+    });
+
+    requestAnimationFrame(draw);
+  }
+
+  resize();
+  window.addEventListener('resize',resize);
+  draw();
+})();
+</script>
+</body>
+</html>
