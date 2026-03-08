@@ -16,8 +16,6 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0a0f14;font-family:
   border-bottom:2px solid #c8410a;
   display:flex;align-items:center;gap:12px;
 }
-
-/* desktop */
 @media(min-width:600px){
   #hdr{height:46px;padding:0 20px;}
   #hdr h1{font-family:'Orbitron',sans-serif;font-weight:900;font-size:13px;color:#f0ede8;letter-spacing:4px;white-space:nowrap}
@@ -26,7 +24,6 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0a0f14;font-family:
   #hdr-right .itag{color:#333} #hdr-right .ival{color:#777}
   #hdr-conae{display:none}
 }
-/* mobile */
 @media(max-width:599px){
   #hdr{height:44px;padding:0 14px;justify-content:space-between;}
   #hdr h1{font-family:'Orbitron',sans-serif;font-weight:900;font-size:13px;color:#f0ede8;letter-spacing:3px;}
@@ -35,7 +32,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0a0f14;font-family:
   #hdr-conae{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:2px;color:#c8410a;text-transform:uppercase;}
 }
 
-/* ── Botón volver al inicio ── */
+/* ── Botón volver ── */
 #btn-home{
   display:flex;align-items:center;gap:5px;
   text-decoration:none;flex-shrink:0;
@@ -47,13 +44,22 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0a0f14;font-family:
 }
 #btn-home:hover{color:#c8410a;border-color:rgba(200,65,10,0.6);background:rgba(200,65,10,0.06);}
 #btn-home::before{content:'←';font-size:11px;}
-@media(max-width:599px){
-  #btn-home{font-size:8px;padding:2px 8px;}
-}
+@media(max-width:599px){#btn-home{font-size:8px;padding:2px 8px;}}
 
-#cv{position:fixed;left:0;right:0;bottom:0;z-index:1;display:block}
-@media(min-width:600px){#cv{top:46px}}
-@media(max-width:599px){#cv{top:44px}}
+/* ── Lang toggle ── */
+#lang-btn{
+  font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.5px;
+  color:rgba(200,200,200,0.35);
+  background:rgba(255,255,255,0.03);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:3px;padding:3px 10px;cursor:pointer;
+  transition:all .2s;white-space:nowrap;flex-shrink:0;
+}
+#lang-btn:hover{color:#f0ede8;border-color:rgba(255,255,255,0.25);}
+
+#cv{position:fixed;left:0;right:0;z-index:1;display:block}
+@media(min-width:600px){#cv{top:46px;bottom:28px}}
+@media(max-width:599px){#cv{top:44px;bottom:26px}}
 
 /* ── DESKTOP: panel de texto derecha ── */
 #info-panel{
@@ -62,15 +68,15 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0a0f14;font-family:
 }
 @media(min-width:600px){
   #info-panel{
-    bottom:60px;right:60px;
+    bottom:70px;right:60px;
     text-align:right;
     display:flex;flex-direction:column;align-items:flex-end;gap:4px;
   }
 }
 @media(max-width:599px){
   #info-panel{
-    bottom:0;left:0;right:0;
-    padding:20px 24px 32px;
+    bottom:42px;left:0;right:0;
+    padding:16px 20px 16px;
     background:linear-gradient(to top, rgba(5,8,14,0.95) 60%, rgba(5,8,14,0) 100%);
   }
 }
@@ -78,7 +84,6 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0a0f14;font-family:
 .info-line{overflow:hidden;white-space:nowrap;opacity:0;margin-bottom:2px;}
 .info-line-inner{display:inline-block;}
 
-/* Tamaños desktop */
 @media(min-width:600px){
   .il-eyebrow{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:6px;color:#fff;text-transform:uppercase;text-shadow:0 0 18px rgba(255,255,255,0.3),0 2px 8px rgba(0,0,0,0.9);}
   .il-title{font-family:'Barlow',sans-serif;font-size:64px;font-weight:900;letter-spacing:6px;color:#fff;text-transform:uppercase;text-shadow:0 0 40px rgba(255,255,255,0.15),0 2px 16px rgba(0,0,0,0.95);}
@@ -88,14 +93,13 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0a0f14;font-family:
   .il-conae{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:3px;color:#fff;text-shadow:0 1px 6px rgba(0,0,0,0.95);}
   .il-industria{font-family:'Orbitron',sans-serif;font-size:16px;font-weight:900;letter-spacing:5px;color:#e8c840;text-shadow:0 0 28px rgba(232,200,64,0.8),0 2px 12px rgba(0,0,0,0.95);}
 }
-/* Tamaños mobile */
 @media(max-width:599px){
   .il-eyebrow{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:5px;color:#fff;text-transform:uppercase;text-shadow:0 1px 6px rgba(0,0,0,0.9);opacity:0.7;}
-  .il-title{font-family:'Barlow',sans-serif;font-size:44px;font-weight:900;letter-spacing:3px;color:#fff;text-transform:uppercase;text-shadow:0 2px 16px rgba(0,0,0,0.95);line-height:1;}
-  .il-sats{font-family:'Orbitron',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;color:#fff;text-shadow:0 1px 6px rgba(0,0,0,0.95);opacity:0.85;}
-  .il-desc{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.5px;color:#fff;line-height:1.6;text-shadow:0 1px 6px rgba(0,0,0,0.95);opacity:0.75;white-space:normal!important;}
-  .il-conae{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2.5px;color:#fff;opacity:0.5;text-shadow:0 1px 4px rgba(0,0,0,0.9);}
-  .il-industria{font-family:'Orbitron',sans-serif;font-size:12px;font-weight:900;letter-spacing:4px;color:#e8c840;text-shadow:0 0 20px rgba(232,200,64,0.7),0 2px 10px rgba(0,0,0,0.95);}
+  .il-title{font-family:'Barlow',sans-serif;font-size:36px;font-weight:900;letter-spacing:3px;color:#fff;text-transform:uppercase;text-shadow:0 2px 16px rgba(0,0,0,0.95);line-height:1;}
+  .il-sats{font-family:'Orbitron',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;color:#fff;text-shadow:0 1px 6px rgba(0,0,0,0.95);opacity:0.85;white-space:normal!important;}
+  .il-desc{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.5px;color:#fff;line-height:1.5;text-shadow:0 1px 6px rgba(0,0,0,0.95);opacity:0.75;white-space:normal!important;}
+  .il-conae{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2.5px;color:#fff;opacity:0.5;text-shadow:0 1px 4px rgba(0,0,0,0.9);white-space:normal!important;}
+  .il-industria{font-family:'Orbitron',sans-serif;font-size:11px;font-weight:900;letter-spacing:4px;color:#e8c840;text-shadow:0 0 20px rgba(232,200,64,0.7),0 2px 10px rgba(0,0,0,0.95);}
   .info-line{margin-bottom:3px;}
 }
 
@@ -122,9 +126,94 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0a0f14;font-family:
 .swath-chip .sc-label{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:1.5px;color:#fff;opacity:0.8;}
 .swath-chip .sc-km{font-family:'Orbitron',monospace;font-size:8px;font-weight:700;color:#fff;opacity:0.5;}
 
-/* Ocultar elementos exclusivos en contexto incorrecto */
 @media(min-width:600px){
   #mode-pill, #swath-info{display:none!important}
+}
+
+/* ── DESKTOP MODE CARDS ── */
+#mode-cards{
+  position:fixed;
+  z-index:30;
+  pointer-events:none;
+  display:none;
+}
+@media(min-width:600px){
+  #mode-cards{
+    display:flex;
+    flex-direction:row;
+    align-items:flex-end;
+    gap:20px;
+    bottom:58px;
+    left:50%;
+    transform:translateX(-50%);
+    pointer-events:all;
+  }
+}
+
+.mode-card{
+  position:relative;
+  background:rgba(255,255,255,0.09);
+  backdrop-filter:blur(14px);
+  border:1px solid rgba(255,255,255,0.16);
+  border-radius:8px;
+  padding:14px 16px 14px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  cursor:pointer;
+  opacity:0;
+  transform:translateY(22px);
+  transition:opacity 0.7s ease, transform 0.7s ease, background 0.25s, border-color 0.25s, box-shadow 0.25s;
+  box-shadow:0 4px 28px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.10);
+  user-select:none;
+}
+.mode-card.visible{opacity:1;transform:translateY(0);}
+.mode-card:hover{background:rgba(255,255,255,0.14);box-shadow:0 6px 36px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.16);}
+.mode-card.active{background:rgba(255,255,255,0.15);border-color:rgba(255,255,255,0.32);box-shadow:0 8px 48px rgba(0,0,0,0.65), inset 0 1px 0 rgba(255,255,255,0.18);}
+.mode-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:8px 8px 0 0;}
+.card-sm::before{background:linear-gradient(90deg,#f87060,#f0a040);}
+.card-tn::before{background:linear-gradient(90deg,#4466cc,#6030a8);}
+.card-tw::before{background:linear-gradient(90deg,#186038,#40c878);}
+.card-name{font-family:'Orbitron',sans-serif;font-weight:900;font-size:10px;letter-spacing:3px;color:#ffffff;text-transform:uppercase;text-shadow:0 1px 6px rgba(0,0,0,0.9);margin-bottom:12px;white-space:nowrap;}
+.card-scene-wrap{display:flex;align-items:flex-end;justify-content:center;margin-bottom:12px;}
+.card-scene{border:1px solid rgba(255,255,255,0.30);background:rgba(255,255,255,0.07);flex-shrink:0;transition:background 0.3s;}
+.card-sm .card-scene{background:rgba(248,112,96,0.12);border:2px solid rgba(0,0,0,0.85);outline:1px solid rgba(248,112,96,0.50);}
+.card-tn .card-scene{background:rgba(68,102,204,0.12);border:2px solid rgba(0,0,0,0.85);outline:1px solid rgba(68,102,204,0.50);}
+.card-tw .card-scene{background:rgba(24,96,56,0.16);border:2px solid rgba(0,0,0,0.85);outline:1px solid rgba(64,200,120,0.45);}
+.card-size{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.8px;color:rgba(255,255,255,0.85);text-shadow:0 1px 4px rgba(0,0,0,0.9);white-space:nowrap;}
+.card-detail{width:100%;overflow:hidden;max-height:0;opacity:0;transition:max-height 0.45s cubic-bezier(0.4,0,0.2,1), opacity 0.35s ease, margin-top 0.35s;margin-top:0;}
+.mode-card.active .card-detail{max-height:220px;opacity:1;margin-top:14px;}
+.detail-divider{width:100%;height:1px;background:rgba(255,255,255,0.12);margin-bottom:12px;}
+.detail-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:7px;gap:16px;}
+.detail-label{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:2px;color:rgba(255,255,255,0.40);text-transform:uppercase;white-space:nowrap;}
+.detail-value{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;color:rgba(255,255,255,0.90);text-shadow:0 1px 4px rgba(0,0,0,0.8);white-space:nowrap;}
+.pol-badges{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end;}
+.pol-badge{font-family:'Orbitron',sans-serif;font-size:8px;font-weight:700;letter-spacing:1.5px;padding:2px 7px;border-radius:3px;border:1px solid;}
+.pol-sp{color:#f87060;border-color:rgba(248,112,96,0.5);background:rgba(248,112,96,0.10);}
+.pol-dp{color:#e8c840;border-color:rgba(232,200,64,0.5);background:rgba(232,200,64,0.10);}
+.pol-qp{color:#40c878;border-color:rgba(64,200,120,0.5);background:rgba(64,200,120,0.10);}
+.card-hint{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:1.5px;color:rgba(255,255,255,0.25);margin-top:8px;transition:opacity 0.3s;}
+.mode-card.active .card-hint{opacity:0;}
+
+/* ── FOOTER UNIFICADO ── */
+#site-footer{
+  position:fixed;bottom:0;left:0;right:0;z-index:40;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:7px 20px;
+  background:rgba(0,5,18,0.82);
+  border-top:1px solid rgba(100,160,255,0.08);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  font-family:'DM Mono',monospace;font-size:8px;letter-spacing:1.2px;
+  color:rgba(255,255,255,0.16);
+}
+#site-footer .ft-left{text-transform:uppercase;}
+#site-footer .ft-right{text-align:right;}
+#site-footer a{color:rgba(200,65,10,0.75);text-decoration:none;transition:color .2s;}
+#site-footer a:hover{color:#c8410a;}
+@media(max-width:600px){
+  #site-footer{flex-direction:column;gap:3px;padding:6px 14px;text-align:center;}
+  #site-footer .ft-left,#site-footer .ft-right{text-align:center;}
 }
 </style>
 </head>
@@ -138,10 +227,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0a0f14;font-family:
   </div>
   <div id="hdr-conae">MODOS SAR</div>
   <div id="hdr-right">
-    <span><span class="itag">SM </span><span class="ival">74 km</span></span>
-    <span><span class="itag">TN </span><span class="ival">444 km</span></span>
-    <span><span class="itag">TW </span><span class="ival">888 km</span></span>
   </div>
+  <button id="lang-btn" onclick="toggleLang()">ESP / ENG</button>
 </div>
 
 <!-- Mobile only -->
@@ -152,20 +239,149 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0a0f14;font-family:
   <div class="swath-chip" style="border-color:#186038"><span class="sc-label">TOPSAR W</span><span class="sc-km">888 km</span></div>
 </div>
 
+<!-- Desktop mode cards -->
+<div id="mode-cards">
+  <div class="mode-card card-sm" id="card-sm" onclick="toggleCard('card-sm')">
+    <div class="card-name" data-es="Stripmap" data-en="Stripmap">Stripmap</div>
+    <div class="card-scene-wrap" style="height:200px;">
+      <div class="card-scene" style="width:9px;height:33px;"></div>
+    </div>
+    <div class="card-size">20 km × 74 km</div>
+    <div class="card-detail">
+      <div class="detail-divider"></div>
+      <div class="detail-row"><span class="detail-label" data-es="Resolución" data-en="Resolution">Resolución</span><span class="detail-value">10 m × 10 m</span></div>
+      <div class="detail-row"><span class="detail-label">Swath</span><span class="detail-value">20 km</span></div>
+      <div class="detail-row"><span class="detail-label" data-es="Longitud" data-en="Length">Longitud</span><span class="detail-value">74 km</span></div>
+      <div class="detail-row"><span class="detail-label" data-es="Polarización" data-en="Polarization">Polarización</span>
+        <div class="pol-badges"><span class="pol-badge pol-sp">SP</span><span class="pol-badge pol-dp">DP</span><span class="pol-badge pol-qp">QP</span></div>
+      </div>
+    </div>
+    <div class="card-hint" data-es="CLICK PARA DETALLE" data-en="CLICK FOR DETAIL">CLICK PARA DETALLE</div>
+  </div>
+
+  <div class="mode-card card-tn" id="card-tn" onclick="toggleCard('card-tn')">
+    <div class="card-name">TOPSAR Narrow</div>
+    <div class="card-scene-wrap" style="height:200px;">
+      <div class="card-scene" style="width:67px;height:100px;"></div>
+    </div>
+    <div class="card-size">150 km × 222 km</div>
+    <div class="card-detail">
+      <div class="detail-divider"></div>
+      <div class="detail-row"><span class="detail-label" data-es="Resolución" data-en="Resolution">Resolución</span><span class="detail-value">30 m × 30 m</span></div>
+      <div class="detail-row"><span class="detail-label">Swath</span><span class="detail-value">150 km</span></div>
+      <div class="detail-row"><span class="detail-label" data-es="Longitud" data-en="Length">Longitud</span><span class="detail-value">222 km</span></div>
+      <div class="detail-row"><span class="detail-label" data-es="Polarización" data-en="Polarization">Polarización</span>
+        <div class="pol-badges"><span class="pol-badge pol-sp">SP</span><span class="pol-badge pol-dp">DP</span></div>
+      </div>
+    </div>
+    <div class="card-hint" data-es="CLICK PARA DETALLE" data-en="CLICK FOR DETAIL">CLICK PARA DETALLE</div>
+  </div>
+
+  <div class="mode-card card-tw" id="card-tw" onclick="toggleCard('card-tw')">
+    <div class="card-name">TOPSAR Wide</div>
+    <div class="card-scene-wrap" style="height:200px;">
+      <div class="card-scene" style="width:99px;height:200px;"></div>
+    </div>
+    <div class="card-size">220 km × 445 km</div>
+    <div class="card-detail">
+      <div class="detail-divider"></div>
+      <div class="detail-row"><span class="detail-label" data-es="Resolución" data-en="Resolution">Resolución</span><span class="detail-value">100 m × 100 m</span></div>
+      <div class="detail-row"><span class="detail-label">Swath</span><span class="detail-value">220 km</span></div>
+      <div class="detail-row"><span class="detail-label" data-es="Longitud" data-en="Length">Longitud</span><span class="detail-value">445 km</span></div>
+      <div class="detail-row"><span class="detail-label" data-es="Polarización" data-en="Polarization">Polarización</span>
+        <div class="pol-badges"><span class="pol-badge pol-sp">SP</span><span class="pol-badge pol-dp">DP</span></div>
+      </div>
+    </div>
+    <div class="card-hint" data-es="CLICK PARA DETALLE" data-en="CLICK FOR DETAIL">CLICK PARA DETALLE</div>
+  </div>
+</div>
+
 <!-- Texto animado -->
 <div id="info-panel">
-  <div class="info-line" id="il0"><span class="info-line-inner il-eyebrow">Constelación</span></div>
-  <div class="info-line" id="il1"><span class="info-line-inner il-title">SAOCOM</span></div>
-  <div class="info-line" id="il2"><span class="info-line-inner il-sats">SAOCOM 1A &amp; SAOCOM 1B</span></div>
-  <div class="info-line" id="il3"><span class="info-line-inner il-desc">Satélites Argentinos de Observación con Microondas</span></div>
-  <div class="info-line" id="il4"><span class="info-line-inner il-desc">Polarización simple, dual y cuádruple</span></div>
-  <div class="info-line" id="il5"><span class="info-line-inner il-conae">Diseñado por CONAE</span></div>
-  <div class="info-line" id="il6"><span class="info-line-inner il-industria">Industria Argentina</span></div>
+  <div class="info-line" id="il0"><span class="info-line-inner il-eyebrow" id="il0-txt">Constelación</span></div>
+  <div class="info-line" id="il1"><span class="info-line-inner il-title" id="il1-txt">SAOCOM</span></div>
+  <div class="info-line" id="il2"><span class="info-line-inner il-sats" id="il2-txt">SAOCOM 1A &amp; SAOCOM 1B</span></div>
+  <div class="info-line" id="il3"><span class="info-line-inner il-desc" id="il3-txt">Satélites Argentinos de Observación con Microondas</span></div>
+  <div class="info-line" id="il4"><span class="info-line-inner il-desc" id="il4-txt">Tiempo de revisita: 16 días (1 sat) · 8 días (ambos)</span></div>
+  <div class="info-line" id="il4b"><span class="info-line-inner il-desc" id="il4b-txt">Pedidos urgentes · NRT delivery vía FTP</span></div>
+  <div class="info-line" id="il4c"><span class="info-line-inner il-desc" id="il4c-txt">Equipo dedicado Full Time · Postventa</span></div>
+  <div class="info-line" id="il5"><span class="info-line-inner il-conae" id="il5-txt">Diseñado por CONAE</span></div>
+  <div class="info-line" id="il6"><span class="info-line-inner il-industria" id="il6-txt">Industria Argentina</span></div>
 </div>
 
 <canvas id="cv"></canvas>
 
+<!-- Footer unificado -->
+<div id="site-footer">
+  <span class="ft-left" id="ft-copy">SAOCOM es una marca registrada de la Comisión Nacional de Actividades Espaciales (CONAE). Este sitio es un proyecto independiente con fines educativos y no constituye un sitio oficial ni cuenta con el aval de CONAE.</span>
+  <span class="ft-right" id="ft-design">Página diseñada por <a href="https://www.linkedin.com/in/rubenpesoa/" target="_blank" rel="noopener">Ruben Pesoa</a></span>
+</div>
+
 <script>
+/* ── IDIOMA ── */
+var LANG = 'es';
+var MODOS_T = {
+  es:{
+    inicio:'INICIO',
+    hdrTitle:'SAOCOM — MODOS SAR',
+    hdrSub:'Dual-Pol & Quad-Pol · Vista simultánea · CONAE Argentina',
+    il0:'Constelación', il1:'SAOCOM', il2:'SAOCOM 1A & SAOCOM 1B',
+    il3:'Satélites Argentinos de Observación con Microondas',
+    il4:'Tiempo de revisita: 16 días (1 sat) · 8 días (ambos)',
+    il4b:'Pedidos urgentes · NRT delivery vía FTP',
+    il4c:'Equipo dedicado Full Time · Postventa',
+    il5:'Diseñado por CONAE', il6:'Industria Argentina',
+    modeSM:'STRIPMAP', modeTN:'TOPSAR NARROW', modeTW:'TOPSAR WIDE',
+    modeSMm:'STRIPMAP', modeTNm:'TOPSAR N', modeTWm:'TOPSAR W',
+    ftCopy:'SAOCOM es una marca registrada de la Comisión Nacional de Actividades Espaciales (CONAE). Este sitio es un proyecto independiente con fines educativos y no constituye un sitio oficial ni cuenta con el aval de CONAE.',
+    ftDesign:'Página diseñada por'
+  },
+  en:{
+    inicio:'HOME',
+    hdrTitle:'SAOCOM — SAR MODES',
+    hdrSub:'Dual-Pol & Quad-Pol · Simultaneous view · CONAE Argentina',
+    il0:'Constellation', il1:'SAOCOM', il2:'SAOCOM 1A & SAOCOM 1B',
+    il3:'Argentine Satellites for Microwave Observation',
+    il4:'Revisit time: 16 days (1 sat) · 8 days (both)',
+    il4b:'Urgent orders · Near-Real-Time delivery via FTP',
+    il4c:'Dedicated full-time team · Post-sale support',
+    il5:'Designed by CONAE', il6:'Argentine Industry',
+    modeSM:'STRIPMAP', modeTN:'TOPSAR NARROW', modeTW:'TOPSAR WIDE',
+    modeSMm:'STRIPMAP', modeTNm:'TOPSAR N', modeTWm:'TOPSAR W',
+    ftCopy:'SAOCOM is a registered trademark of the Comisión Nacional de Actividades Espaciales (CONAE). This website is an independent educational project and is not an official CONAE website nor endorsed by CONAE.',
+    ftDesign:'Page designed by'
+  }
+};
+
+function toggleLang(){
+  LANG = LANG==='es'?'en':'es';
+  applyLang();
+  document.getElementById('lang-btn').textContent = LANG==='es'?'ESP / ENG':'ENG / ESP';
+}
+function applyLang(){
+  var t = MODOS_T[LANG];
+  document.getElementById('btn-home').textContent = t.inicio;
+  if(!isMobile){
+    document.getElementById('hdr-title').textContent = t.hdrTitle;
+    document.getElementById('hdr-sub').textContent = t.hdrSub;
+  }
+  ['il0','il1','il2','il3','il4','il4b','il4c','il5','il6'].forEach(function(id){
+    var el=document.getElementById(id+'-txt');if(el)el.textContent=t[id];
+  });
+  // mode labels
+  document.querySelectorAll('[data-es]').forEach(function(el){
+    el.textContent = LANG==='es' ? el.getAttribute('data-es') : el.getAttribute('data-en');
+  });
+  modeLabels = {
+    SM: isMobile ? t.modeSMm : t.modeSM,
+    TN: isMobile ? t.modeTNm : t.modeTN,
+    TW: isMobile ? t.modeTWm : t.modeTW,
+    P1:'', P2:'', COAST:''
+  };
+  document.getElementById('ft-copy').textContent = t.ftCopy;
+  document.getElementById('ft-design').innerHTML = t.ftDesign+' <a href="https://www.linkedin.com/in/rubenpesoa/" target="_blank" rel="noopener">Ruben Pesoa</a>';
+}
+
 var isMobile = window.innerWidth < 600;
 
 if(!isMobile){
@@ -177,10 +393,11 @@ var canvas = document.getElementById('cv');
 var ctx    = canvas.getContext('2d');
 var W, H;
 var HDR_H  = isMobile ? 44 : 46;
+var FTR_H  = 26;
 
 function resize(){
   W = canvas.width  = window.innerWidth;
-  H = canvas.height = window.innerHeight - HDR_H;
+  H = canvas.height = window.innerHeight - HDR_H - FTR_H;
 }
 resize();
 window.addEventListener('resize', function(){
@@ -199,7 +416,7 @@ function project(wx, wy, wz){
 }
 
 var SAT_SPEED = isMobile ? 40 : 50;
-var SAT_Y     = isMobile ? 100 : 140;
+var SAT_Y     = isMobile ? 100 : 200;
 var SCALE     = isMobile ? 0.38 : 0.42;
 
 var SM_LEN = Math.round(74  * SCALE);
@@ -248,12 +465,6 @@ if(isMobile){
       SM: buildSM(0, [32,28,25,22,20,18,16,14,12]),
       TN: { sw:[{x0:30,x1:120,col:'#2255cc',alpha:0.65},{x0:120,x1:185,col:'#6030a8',alpha:0.65}]},
       TW: { sw:[{x0:30,x1:215,col:'#186038',alpha:0.42}]}
-    },
-    quad: {
-      nadirX: XSEP, col: '#e8520a',
-      SM: buildSM(XSEP, [18,16,14,12,11,10,9,8,7]),
-      TN: { sw:[{x0:XSEP+30,x1:XSEP+80,col:'#2255cc',alpha:0.65},{x0:XSEP+80,x1:XSEP+115,col:'#6030a8',alpha:0.65}]},
-      TW: { sw:[{x0:XSEP+30,x1:XSEP+140,col:'#186038',alpha:0.42}]}
     }
   };
 }
@@ -322,7 +533,7 @@ function tickSat(key, newZ){
   if(zone === 'SM'){
     if(!st.smModeDone){
       st.smModeDone = true;
-      st.groundLabels.push({text:'STRIPMAP', wx:pd.nadirX-10, wz:newZ+labelOffset, size:smSize, col:'#ffffff', tag:'sm', nadirX:pd.nadirX});
+      st.groundLabels.push({text:modeLabels['SM']||'STRIPMAP', wx:pd.nadirX-10, wz:newZ+labelOffset, size:smSize, col:'#ffffff', tag:'sm', nadirX:pd.nadirX});
     }
     st.groundLabels.forEach(function(l){ if(l.tag==='sm') l.wz = newZ+labelOffset; });
     pd.SM.sw.forEach(function(sw){
@@ -340,7 +551,7 @@ function tickSat(key, newZ){
   if(zone === 'TN'){
     if(!st.tnModeDone){
       st.tnModeDone = true;
-      st.groundLabels.push({text: isMobile ? 'TOPSAR N' : 'TOPSAR NARROW', wx:pd.nadirX-10, wz:newZ+labelOffset-10, size:tnSize, col:'#ffffff', tag:'tn', nadirX:pd.nadirX});
+      st.groundLabels.push({text: modeLabels['TN']||'TOPSAR NARROW', wx:pd.nadirX-10, wz:newZ+labelOffset-10, size:tnSize, col:'#ffffff', tag:'tn', nadirX:pd.nadirX});
       pd.TN.sw.forEach(function(sw){
         st.stripes.push({x0:sw.x0, x1:sw.x1, zS:prev, zE:newZ, col:sw.col, alpha:sw.alpha});
         st.tnStripes.push(st.stripes.length - 1);
@@ -355,7 +566,7 @@ function tickSat(key, newZ){
     if(!st.twModeDone){
       st.twModeDone = true;
       var tw = pd.TW.sw[0];
-      st.groundLabels.push({text: isMobile ? 'TOPSAR W' : 'TOPSAR WIDE', wx:pd.nadirX-10, wz:newZ+(labelOffset-10), size:twSize, col:'#ffffff', tag:'tw', nadirX:pd.nadirX});
+      st.groundLabels.push({text: modeLabels['TW']||'TOPSAR WIDE', wx:pd.nadirX-10, wz:newZ+(labelOffset-10), size:twSize, col:'#ffffff', tag:'tw', nadirX:pd.nadirX});
       st.stripes.push({x0:tw.x0, x1:tw.x1, zS:prev, zE:newZ, col:tw.col, alpha:tw.alpha});
       st.twIdx = st.stripes.length - 1;
     }
@@ -444,7 +655,7 @@ function drawBackground(){
     ctx.fillStyle = 'rgba(255,255,255,0.45)';
     ctx.font = 'bold 13px monospace';
     ctx.textAlign = 'center';
-    ctx.fillText('Cargando imágenes satelitales... '+tilesLoaded+'/'+tilesTotal, W/2, H/2);
+    ctx.fillText((LANG==='es'?'Cargando imágenes satelitales':'Loading satellite imagery')+'... '+tilesLoaded+'/'+tilesTotal, W/2, H/2);
   }
   ctx.fillStyle = 'rgba(5,8,15,' + (isMobile ? '0.42' : '0.38') + ')';
   ctx.fillRect(0, 0, W, H);
@@ -524,7 +735,7 @@ function drawSatellite(key, wz){
     ctx.font = 'bold 9px Orbitron,sans-serif';
     ctx.fillStyle = pd.col; ctx.textAlign = 'center';
     ctx.shadowColor = 'rgba(0,0,0,0.9)'; ctx.shadowBlur = 6;
-    ctx.fillText(key === 'dual' ? 'DUAL' : 'QUAD', 0, 0);
+    ctx.fillText('SAOCOM', 0, 0);
     ctx.restore(); ctx.shadowBlur = 0;
   }
 
@@ -536,7 +747,7 @@ function drawSatellite(key, wz){
 
 function drawOrbitalTracks(){
   var zS = SAT_Z_START+60, zE = SAT_Z_END-60;
-  var nadirs = isMobile ? [0] : [0, XSEP];
+  var nadirs = [0];
   nadirs.forEach(function(nx){
     drawLine(project(nx,SAT_Y,zS), project(nx,SAT_Y,zE), '#dd4010', 0.8, 0.25);
     drawLine(project(nx,0,zS),     project(nx,0,zE),     '#dd4010', 0.5, 0.12);
@@ -573,7 +784,7 @@ function render(){
   } else {
     ISO_SCALE = Math.min(W, H*1.4) / 1050;
     originX   = W * 0.22;
-    originY   = H * 0.48;
+    originY   = H * 0.36;
   }
   drawBackground();
   drawGround();
@@ -612,22 +823,30 @@ animate(0);
     {id:'il2', delay:2000, dur:450},
     {id:'il3', delay:2600, dur:600},
     {id:'il4', delay:3400, dur:600},
-    {id:'il5', delay:4200, dur:400},
-    {id:'il6', delay:4800, dur:550}
+    {id:'il4b',delay:4100, dur:600},
+    {id:'il4c',delay:4700, dur:600},
+    {id:'il5', delay:5300, dur:400},
+    {id:'il6', delay:5800, dur:550}
   ] : [
     {id:'il0', delay:600,  dur:400},
     {id:'il1', delay:1100, dur:600},
     {id:'il2', delay:1900, dur:500},
     {id:'il3', delay:2600, dur:700},
-    {id:'il4', delay:3500, dur:900},
-    {id:'il5', delay:4600, dur:500},
-    {id:'il6', delay:5300, dur:600}
+    {id:'il4', delay:3500, dur:800},
+    {id:'il4b',delay:4400, dur:800},
+    {id:'il4c',delay:5200, dur:700},
+    {id:'il5', delay:6000, dur:500},
+    {id:'il6', delay:6600, dur:600}
   ];
 
   lines.forEach(function(l){
     var el    = document.getElementById(l.id);
     var inner = el.querySelector('.info-line-inner');
-    var isDesc = inner.classList.contains('il-desc');
+    var isWrappable = isMob && (
+      inner.classList.contains('il-desc') ||
+      inner.classList.contains('il-sats') ||
+      inner.classList.contains('il-conae')
+    );
     el.style.opacity    = '0';
     el.style.width      = '0px';
     el.style.overflow   = 'hidden';
@@ -641,7 +860,7 @@ animate(0);
       requestAnimationFrame(function(){
         requestAnimationFrame(function(){
           el.style.width = fullW + 'px';
-          if(isMob && isDesc){
+          if(isWrappable){
             setTimeout(function(){
               el.style.whiteSpace = 'normal';
               el.style.width = '100%';
@@ -651,7 +870,31 @@ animate(0);
       });
     }, l.delay);
   });
+
+  if(!isMob){
+    var cards = [
+      {id:'card-sm', delay:1800},
+      {id:'card-tn', delay:2400},
+      {id:'card-tw', delay:3000}
+    ];
+    cards.forEach(function(c){
+      setTimeout(function(){
+        var el = document.getElementById(c.id);
+        if(el) el.classList.add('visible');
+      }, c.delay);
+    });
+  }
 })();
+
+function toggleCard(id){
+  var all = ['card-sm','card-tn','card-tw'];
+  all.forEach(function(cid){
+    var el = document.getElementById(cid);
+    if(!el) return;
+    if(cid === id) el.classList.toggle('active');
+    else el.classList.remove('active');
+  });
+}
 </script>
 </body>
 </html>

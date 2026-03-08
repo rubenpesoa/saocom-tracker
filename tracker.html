@@ -59,6 +59,17 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--bright);
 #btn-home:hover{color:var(--accent-back);border-color:rgba(200,65,10,0.6);background:rgba(200,65,10,0.06);}
 #btn-home::before{content:'←';font-size:11px;}
 
+/* ── Lang toggle ── */
+#lang-btn{
+  font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.5px;
+  color:rgba(200,225,255,0.35);
+  background:rgba(255,255,255,0.03);
+  border:1px solid var(--border);
+  border-radius:3px;padding:3px 10px;cursor:pointer;
+  transition:all .2s;white-space:nowrap;flex-shrink:0;
+}
+#lang-btn:hover{color:var(--bright);border-color:var(--border2);background:rgba(56,189,248,0.07);}
+
 /* Toggle vista */
 #view-toggle{
   background:transparent;border:1px solid var(--border2);
@@ -203,6 +214,27 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;
 .ctrl-btn:active{border-color:var(--c1a);color:var(--c1a)}
 .sctrl-lbl{font-size:8px;color:var(--text);white-space:nowrap}
 
+/* ══ FOOTER UNIFICADO ══ */
+#site-footer{
+  flex-shrink:0;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:7px 20px;
+  background:rgba(0,5,18,0.82);
+  border-top:1px solid rgba(100,160,255,0.08);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  font-family:'DM Mono',monospace;font-size:8px;letter-spacing:1.2px;
+  color:rgba(255,255,255,0.16);
+}
+#site-footer .ft-left{text-transform:uppercase;}
+#site-footer .ft-right{text-align:right;}
+#site-footer a{color:rgba(200,65,10,0.75);text-decoration:none;transition:color .2s;}
+#site-footer a:hover{color:#c8410a;}
+@media(max-width:600px){
+  #site-footer{flex-direction:column;gap:3px;padding:6px 14px;text-align:center;}
+  #site-footer .ft-left,#site-footer .ft-right{text-align:center;}
+}
+
 /* ══ OVERLAY ══ */
 #overlay{position:absolute;inset:0;display:flex;flex-direction:column;
   align-items:center;justify-content:center;
@@ -221,12 +253,13 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;
 
 <!-- ══ HEADER ══ -->
 <div id="header">
-  <a href="index.html" id="btn-home">INICIO</a>
-  <h1>SAO<em>COM</em> TRACKER</h1>
+  <a href="index.html" id="btn-home" data-es="INICIO" data-en="HOME">INICIO</a>
+  <h1 id="hdr-title">SAO<em>COM</em> TRACKER</h1>
   <div class="hdr-right">
     <span class="tle-pill" id="tlep-a">1A: —</span>
     <span class="tle-pill" id="tlep-b">1B: —</span>
-    <button id="view-toggle" onclick="toggleView()">📱 MÓVIL</button>
+    <button id="view-toggle" onclick="toggleView()" data-es-mobile="📱 MÓVIL" data-es-desktop="🖥 DESKTOP" data-en-mobile="📱 MOBILE" data-en-desktop="🖥 DESKTOP">📱 MÓVIL</button>
+    <button id="lang-btn" onclick="toggleLang()">ESP / ENG</button>
     <div class="utc-wrap">
       <div id="utcclk">-- UTC</div>
       <div id="localclk">-- local</div>
@@ -244,34 +277,34 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;
     <div id="sidebar">
       <div class="sec">
         <div class="sec-hd" style="color:var(--c1a)">SAOCOM 1A</div>
-        <div class="row"><span class="lbl">Latitud</span><span class="val a" id="d-a-lat">—</span></div>
-        <div class="row"><span class="lbl">Longitud</span><span class="val a" id="d-a-lon">—</span></div>
-        <div class="row"><span class="lbl">Altitud</span><span class="val a" id="d-a-alt">—</span></div>
-        <div class="row"><span class="lbl">Velocidad</span><span class="val a" id="d-a-vel">—</span></div>
+        <div class="row"><span class="lbl" data-es="Latitud" data-en="Latitude">Latitud</span><span class="val a" id="d-a-lat">—</span></div>
+        <div class="row"><span class="lbl" data-es="Longitud" data-en="Longitude">Longitud</span><span class="val a" id="d-a-lon">—</span></div>
+        <div class="row"><span class="lbl" data-es="Altitud" data-en="Altitude">Altitud</span><span class="val a" id="d-a-alt">—</span></div>
+        <div class="row"><span class="lbl" data-es="Velocidad" data-en="Speed">Velocidad</span><span class="val a" id="d-a-vel">—</span></div>
       </div>
       <div class="sec">
         <div class="sec-hd" style="color:var(--c1b)">SAOCOM 1B</div>
-        <div class="row"><span class="lbl">Latitud</span><span class="val b" id="d-b-lat">—</span></div>
-        <div class="row"><span class="lbl">Longitud</span><span class="val b" id="d-b-lon">—</span></div>
-        <div class="row"><span class="lbl">Altitud</span><span class="val b" id="d-b-alt">—</span></div>
-        <div class="row"><span class="lbl">Velocidad</span><span class="val b" id="d-b-vel">—</span></div>
+        <div class="row"><span class="lbl" data-es="Latitud" data-en="Latitude">Latitud</span><span class="val b" id="d-b-lat">—</span></div>
+        <div class="row"><span class="lbl" data-es="Longitud" data-en="Longitude">Longitud</span><span class="val b" id="d-b-lon">—</span></div>
+        <div class="row"><span class="lbl" data-es="Altitud" data-en="Altitude">Altitud</span><span class="val b" id="d-b-alt">—</span></div>
+        <div class="row"><span class="lbl" data-es="Velocidad" data-en="Speed">Velocidad</span><span class="val b" id="d-b-vel">—</span></div>
       </div>
       <div class="sec" style="flex:1">
-        <div class="sec-hd">Próximos passes (el. &gt; 5°)</div>
-        <div id="d-passes-wrap" style="font-size:9px;color:var(--dim)">Calculando…</div>
+        <div class="sec-hd" id="passes-hd">Próximos passes (el. &gt; 5°)</div>
+        <div id="d-passes-wrap" style="font-size:9px;color:var(--dim)" data-es="Calculando…" data-en="Calculating…">Calculando…</div>
       </div>
       <div class="disclaimer">
-        <strong>AVISO LEGAL</strong><br><br>
-        SAOCOM es marca registrada de la <strong>CONAE</strong>. Uso didáctico.<br><br>
+        <strong id="disc-title">AVISO LEGAL</strong><br><br>
+        <span id="disc-body">SAOCOM es marca registrada de la <strong>CONAE</strong>. Uso didáctico.<br><br>
         TLEs: <strong>Space-Track.org</strong> vía CelesTrak.
-        Mapa © <strong>OpenStreetMap</strong> / CARTO.
+        Mapa © <strong>OpenStreetMap</strong> / CARTO.</span>
       </div>
     </div>
 
     <!-- Mapa -->
     <div id="map-wrap">
       <div id="map"></div>
-      <div id="sim-warn">⚠ TIEMPO SIMULADO</div>
+      <div id="sim-warn" data-es="⚠ TIEMPO SIMULADO" data-en="⚠ SIMULATED TIME">⚠ TIEMPO SIMULADO</div>
     </div>
 
   </div><!-- /view-desktop -->
@@ -282,14 +315,14 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;
     <div id="globe-wrap">
       <canvas id="stars-canvas"></canvas>
       <canvas id="globe-canvas"></canvas>
-      <div id="sim-warn-m">⚠ TIEMPO SIMULADO</div>
+      <div id="sim-warn-m" data-es="⚠ TIEMPO SIMULADO" data-en="⚠ SIMULATED TIME">⚠ TIEMPO SIMULADO</div>
 
       <div id="sat-popup">
         <div class="p-title" id="pp-title">—</div>
-        <div class="p-row"><span class="p-lbl">Latitud</span><span class="p-val" id="pp-lat">—</span></div>
-        <div class="p-row"><span class="p-lbl">Longitud</span><span class="p-val" id="pp-lon">—</span></div>
-        <div class="p-row"><span class="p-lbl">Altitud</span><span class="p-val" id="pp-alt">—</span></div>
-        <div class="p-row"><span class="p-lbl">Velocidad</span><span class="p-val" id="pp-vel">—</span></div>
+        <div class="p-row"><span class="p-lbl" data-es="Latitud" data-en="Latitude">Latitud</span><span class="p-val" id="pp-lat">—</span></div>
+        <div class="p-row"><span class="p-lbl" data-es="Longitud" data-en="Longitude">Longitud</span><span class="p-val" id="pp-lon">—</span></div>
+        <div class="p-row"><span class="p-lbl" data-es="Altitud" data-en="Altitude">Altitud</span><span class="p-val" id="pp-alt">—</span></div>
+        <div class="p-row"><span class="p-lbl" data-es="Velocidad" data-en="Speed">Velocidad</span><span class="p-val" id="pp-vel">—</span></div>
       </div>
     </div>
 
@@ -298,34 +331,34 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;
         <div class="cd-box">
           <div class="cd-sat a">1A</div>
           <div class="cd-time" id="cd-a">--:--</div>
-          <div class="cd-label">próximo pase</div>
+          <div class="cd-label" data-es="próximo pase" data-en="next pass">próximo pase</div>
         </div>
         <div class="cd-box">
           <div class="cd-sat b">1B</div>
           <div class="cd-time" id="cd-b">--:--</div>
-          <div class="cd-label">próximo pase</div>
+          <div class="cd-label" data-es="próximo pase" data-en="next pass">próximo pase</div>
         </div>
       </div>
       <div class="sat-row-m">
         <div class="sat-lbl-m a">1A</div>
         <div class="sat-data-m">
-          <div class="ditem"><span class="dlbl">Lat</span><span class="dval-m a" id="m-a-lat">—</span></div>
-          <div class="ditem"><span class="dlbl">Lon</span><span class="dval-m a" id="m-a-lon">—</span></div>
-          <div class="ditem"><span class="dlbl">Alt</span><span class="dval-m a" id="m-a-alt">—</span></div>
+          <div class="ditem"><span class="dlbl" data-es="Lat" data-en="Lat">Lat</span><span class="dval-m a" id="m-a-lat">—</span></div>
+          <div class="ditem"><span class="dlbl" data-es="Lon" data-en="Lon">Lon</span><span class="dval-m a" id="m-a-lon">—</span></div>
+          <div class="ditem"><span class="dlbl" data-es="Alt" data-en="Alt">Alt</span><span class="dval-m a" id="m-a-alt">—</span></div>
           <div class="ditem"><span class="dlbl">km/h</span><span class="dval-m a" id="m-a-vel">—</span></div>
         </div>
       </div>
       <div class="sat-row-m">
         <div class="sat-lbl-m b">1B</div>
         <div class="sat-data-m">
-          <div class="ditem"><span class="dlbl">Lat</span><span class="dval-m b" id="m-b-lat">—</span></div>
-          <div class="ditem"><span class="dlbl">Lon</span><span class="dval-m b" id="m-b-lon">—</span></div>
-          <div class="ditem"><span class="dlbl">Alt</span><span class="dval-m b" id="m-b-alt">—</span></div>
+          <div class="ditem"><span class="dlbl" data-es="Lat" data-en="Lat">Lat</span><span class="dval-m b" id="m-b-lat">—</span></div>
+          <div class="ditem"><span class="dlbl" data-es="Lon" data-en="Lon">Lon</span><span class="dval-m b" id="m-b-lon">—</span></div>
+          <div class="ditem"><span class="dlbl" data-es="Alt" data-en="Alt">Alt</span><span class="dval-m b" id="m-b-alt">—</span></div>
           <div class="ditem"><span class="dlbl">km/h</span><span class="dval-m b" id="m-b-vel">—</span></div>
         </div>
       </div>
       <div id="speed-wrap-m">
-        <button class="ctrl-btn" onclick="goNow()">⊙ HOY</button>
+        <button class="ctrl-btn" onclick="goNow()" data-es="⊙ HOY" data-en="⊙ NOW">⊙ HOY</button>
         <span class="sctrl-lbl">◀</span>
         <input type="range" id="speed-slider" min="-100" max="100" value="0" step="1"
                oninput="onSpeedChange(this.value)"
@@ -347,18 +380,24 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;
 
 <!-- Desktop controls (fuera de #app para que quede fijo abajo) -->
 <div id="controls-desktop">
-  <button class="btn" onclick="goNow()">⊙ AHORA</button>
+  <button class="btn" onclick="goNow()" id="btn-now" data-es="⊙ AHORA" data-en="⊙ NOW">⊙ AHORA</button>
   <button class="btn play" id="playbtn" onclick="togglePlay()">▶</button>
   <div style="display:flex;flex-direction:column;align-items:center;flex:1;gap:1px">
     <div id="timelbl">—</div>
     <div id="localtlbl">—</div>
   </div>
   <div class="scrub-wrap">
-    <span class="slbl">◀ ATRÁS</span>
+    <span class="slbl" id="lbl-back" data-es="◀ ATRÁS" data-en="◀ BACK">◀ ATRÁS</span>
     <input type="range" id="scrubber" min="-100" max="100" value="0" step="1"
            oninput="onScrub(this.value)" onmouseup="snapCenter()" ontouchend="snapCenter()">
-    <span class="slbl">ADELANTE ▶</span>
+    <span class="slbl" id="lbl-fwd" data-es="ADELANTE ▶" data-en="FORWARD ▶">ADELANTE ▶</span>
   </div>
+</div>
+
+<!-- Footer unificado -->
+<div id="site-footer">
+  <span class="ft-left" id="ft-copy">SAOCOM es una marca registrada de la Comisión Nacional de Actividades Espaciales (CONAE). Este sitio es un proyecto independiente con fines educativos y no constituye un sitio oficial ni cuenta con el aval de CONAE.</span>
+  <span class="ft-right" id="ft-design">Página diseñada por <a href="https://www.linkedin.com/in/rubenpesoa/" target="_blank" rel="noopener">Ruben Pesoa</a></span>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
@@ -368,6 +407,63 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;
 /* ═══════════════════════════════════════════════════════════
    SAOCOM TRACKER — Versión unificada desktop + móvil
    ═══════════════════════════════════════════════════════════ */
+
+/* ── IDIOMA ── */
+var LANG = 'es';
+var T = {
+  es:{
+    inicio:'INICIO', trackerTitle:'SAO<em style="color:var(--c1a);font-style:normal">COM</em> TRACKER',
+    viewMobile:'📱 MÓVIL', viewDesktop:'🖥 DESKTOP',
+    latitud:'Latitud', longitud:'Longitud', altitud:'Altitud', velocidad:'Velocidad',
+    passesHd:'Próximos passes (el. &gt; 5°)', calculating:'Calculando…',
+    discTitle:'AVISO LEGAL',
+    discBody:'SAOCOM es marca registrada de la <strong>CONAE</strong>. Uso didáctico.<br><br>TLEs: <strong>Space-Track.org</strong> vía CelesTrak. Mapa © <strong>OpenStreetMap</strong> / CARTO.',
+    simWarn:'⚠ TIEMPO SIMULADO', nextPass:'próximo pase',
+    now:'⊙ AHORA', back:'◀ ATRÁS', fwd:'ADELANTE ▶', loading:'Iniciando…',
+    ftCopy:'SAOCOM es una marca registrada de la Comisión Nacional de Actividades Espaciales (CONAE). Este sitio es un proyecto independiente con fines educativos y no constituye un sitio oficial ni cuenta con el aval de CONAE.',
+    ftDesign:'Página diseñada por'
+  },
+  en:{
+    inicio:'HOME', trackerTitle:'SAO<em style="color:var(--c1a);font-style:normal">COM</em> TRACKER',
+    viewMobile:'📱 MOBILE', viewDesktop:'🖥 DESKTOP',
+    latitud:'Latitude', longitud:'Longitude', altitud:'Altitude', velocidad:'Speed',
+    passesHd:'Next passes (el. &gt; 5°)', calculating:'Calculating…',
+    discTitle:'DISCLAIMER',
+    discBody:'SAOCOM is a registered trademark of <strong>CONAE</strong>. This site is an independent educational project and is not endorsed by CONAE.<br><br>TLEs: <strong>Space-Track.org</strong> via CelesTrak. Map © <strong>OpenStreetMap</strong> / CARTO.',
+    simWarn:'⚠ SIMULATED TIME', nextPass:'next pass',
+    now:'⊙ NOW', back:'◀ BACK', fwd:'FORWARD ▶', loading:'Starting…',
+    ftCopy:'SAOCOM is a registered trademark of the Comisión Nacional de Actividades Espaciales (CONAE). This website is an independent educational project and is not an official CONAE website nor endorsed by CONAE.',
+    ftDesign:'Page designed by'
+  }
+};
+
+function toggleLang(){
+  LANG = LANG==='es'?'en':'es';
+  applyLang();
+  document.getElementById('lang-btn').textContent = LANG==='es'?'ESP / ENG':'ENG / ESP';
+}
+function applyLang(){
+  var t = T[LANG];
+  document.getElementById('btn-home').textContent = t.inicio;
+  document.getElementById('hdr-title').innerHTML = t.trackerTitle;
+  document.getElementById('view-toggle').textContent = (activeView==='mobile') ? t.viewMobile : t.viewDesktop;
+  // Labels
+  document.querySelectorAll('[data-es]').forEach(function(el){
+    el.textContent = LANG==='es' ? el.getAttribute('data-es') : el.getAttribute('data-en');
+  });
+  document.getElementById('passes-hd').innerHTML = t.passesHd;
+  document.getElementById('disc-title').textContent = t.discTitle;
+  document.getElementById('disc-body').innerHTML = t.discBody;
+  document.getElementById('sim-warn').textContent = t.simWarn;
+  document.getElementById('sim-warn-m').textContent = t.simWarn;
+  document.getElementById('btn-now').textContent = t.now;
+  document.getElementById('lbl-back').textContent = t.back;
+  document.getElementById('lbl-fwd').textContent = t.fwd;
+  document.getElementById('ft-copy').textContent = t.ftCopy;
+  document.getElementById('ft-design').innerHTML = t.ftDesign+' <a href="https://www.linkedin.com/in/rubenpesoa/" target="_blank" rel="noopener">Ruben Pesoa</a>';
+  // passes table re-render
+  if(passCache.a||passCache.b) renderDesktopPasses();
+}
 
 var TLE_FB = {
   a:['1 43641U 18076A   26051.95038859  .00001149  00000-0  15091-3 0  9995',
@@ -393,7 +489,7 @@ function applyView(v) {
   document.getElementById('view-desktop').style.display  = isM ? 'none'  : 'flex';
   document.getElementById('view-mobile').style.display   = isM ? 'flex'  : 'none';
   document.getElementById('controls-desktop').style.display = isM ? 'none' : 'flex';
-  document.getElementById('view-toggle').textContent = isM ? '🖥 DESKTOP' : '📱 MÓVIL';
+  document.getElementById('view-toggle').textContent = isM ? T[LANG].viewMobile : T[LANG].viewDesktop;
   if (isM) { setTimeout(resizeMobile, 50); }
   else      { setTimeout(function(){ if(leafletMap) leafletMap.invalidateSize(); }, 50); }
 }
@@ -438,7 +534,7 @@ function getLookEl(satrec,date,olat,olon){
   }catch(e){return null;}
 }
 function fmtCountdown(ms){
-  if(ms<=0)return 'VISIBLE';
+  if(ms<=0)return LANG==='es'?'VISIBLE':'VISIBLE';
   var s=Math.floor(ms/1000),h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sc=s%60;
   if(h>0)return h+'h '+String(m).padStart(2,'0')+'m';
   return String(m).padStart(2,'0')+':'+String(sc).padStart(2,'0');
@@ -580,8 +676,12 @@ function renderDesktopPasses(){
   (passCache.a||[]).forEach(function(p){all.push({p,id:'a'});});
   (passCache.b||[]).forEach(function(p){all.push({p,id:'b'});});
   all.sort(function(x,y){return x.p.start-y.p.start;});all=all.slice(0,8);
-  if(!all.length){wrap.innerHTML='<span style="color:var(--dim)">Sin passes en 7 días</span>';return;}
-  var html='<table class="passes"><thead><tr><th>Sat.</th><th>Fecha/Hora UTC</th><th>El. máx.</th><th>Dur.</th></tr></thead><tbody>';
+  if(!all.length){wrap.innerHTML='<span style="color:var(--dim)">'+(LANG==='es'?'Sin passes en 7 días':'No passes in 7 days')+'</span>';return;}
+  var satLbl = LANG==='es' ? 'Sat.' : 'Sat.';
+  var dtLbl  = LANG==='es' ? 'Fecha/Hora UTC' : 'Date/Time UTC';
+  var elLbl  = LANG==='es' ? 'El. máx.' : 'Max El.';
+  var durLbl = LANG==='es' ? 'Dur.' : 'Dur.';
+  var html='<table class="passes"><thead><tr><th>'+satLbl+'</th><th>'+dtLbl+'</th><th>'+elLbl+'</th><th>'+durLbl+'</th></tr></thead><tbody>';
   all.forEach(function(item){
     var p=item.p,color=item.id==='a'?'var(--c1a)':'var(--c1b)',label=item.id==='a'?'1A':'1B';
     var dur=Math.round((p.end-p.start)/1000),mn=Math.floor(dur/60),sc=dur%60;
