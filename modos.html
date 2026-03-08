@@ -324,7 +324,7 @@ var MODOS_T = {
   es:{
     inicio:'INICIO',
     hdrTitle:'SAOCOM — MODOS SAR',
-    hdrSub:'Dual-Pol & Quad-Pol · Vista simultánea · CONAE Argentina',
+    hdrSub:'Single / Dual & Quad-Pol · 2 Satélites · CONAE Argentina',
     il0:'Constelación', il1:'SAOCOM', il2:'SAOCOM 1A & SAOCOM 1B',
     il3:'Satélites Argentinos de Observación con Microondas',
     il4:'Tiempo de revisita: 16 días (1 sat) · 8 días (ambos)',
@@ -339,13 +339,13 @@ var MODOS_T = {
   en:{
     inicio:'HOME',
     hdrTitle:'SAOCOM — SAR MODES',
-    hdrSub:'Dual-Pol & Quad-Pol · Simultaneous view · CONAE Argentina',
+    hdrSub:'Single/Dual & Quad Pol · 2 satellites · CONAE Argentina',
     il0:'Constellation', il1:'SAOCOM', il2:'SAOCOM 1A & SAOCOM 1B',
-    il3:'Argentine Satellites for Microwave Observation',
+    il3:'Argentine Microwaves Observation Satellite',
     il4:'Revisit time: 16 days (1 sat) · 8 days (both)',
     il4b:'Urgent orders · Near-Real-Time delivery via FTP',
     il4c:'Dedicated full-time team · Post-sale support',
-    il5:'Designed by CONAE', il6:'Argentine Industry',
+    il5:'Designed by CONAE', il6:'Made in Argentina',
     modeSM:'STRIPMAP', modeTN:'TOPSAR NARROW', modeTW:'TOPSAR WIDE',
     modeSMm:'STRIPMAP', modeTNm:'TOPSAR N', modeTWm:'TOPSAR W',
     ftCopy:'SAOCOM is a registered trademark of the Comisión Nacional de Actividades Espaciales (CONAE). This website is an independent educational project and is not an official CONAE website nor endorsed by CONAE.',
@@ -386,7 +386,7 @@ var isMobile = window.innerWidth < 600;
 
 if(!isMobile){
   document.getElementById('hdr-title').textContent = 'SAOCOM — MODOS SAR';
-  document.getElementById('hdr-sub').textContent = 'Dual-Pol & Quad-Pol · Vista simultánea · CONAE Argentina';
+  document.getElementById('hdr-sub').textContent = 'Single / Dual & Quad-Pol · 2 Satélites  · CONAE Argentina';
 }
 
 var canvas = document.getElementById('cv');
