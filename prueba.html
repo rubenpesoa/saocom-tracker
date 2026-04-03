@@ -1371,6 +1371,7 @@ function loadTLEs(){
       refreshPasses3();
       renderDesktopPasses();
       requestAnimationFrame(mainLoop);
+      if(window.innerWidth < 768) openGlobeModal();
     });
   });
 }
