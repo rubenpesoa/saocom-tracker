@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>SAOCOM</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=DM+Mono:wght@300;400&family=Barlow:wght@800;900&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'DM Mono',monospace;}
+
+/* ── VIDEO DE FONDO ── */
+#bg-video{
+  position:fixed;inset:0;z-index:0;
+  width:100%;height:100%;
+  object-fit:cover;
+  opacity:0.55;
+  transition:opacity 1s ease;
+}
+
+/* Overlay oscuro sobre el video para dar profundidad */
+#video-overlay{
+  position:fixed;inset:0;z-index:1;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(0,10,30,0.55) 0%, transparent 60%),
+    radial-gradient(ellipse at 50% 100%, rgba(0,5,15,0.85) 0%, transparent 70%),
+    linear-gradient(to bottom, rgba(0,5,20,0.4) 0%, rgba(0,0,0,0.15) 50%, rgba(0,5,20,0.6) 100%);
+  pointer-events:none;
+}
+
+
+
+/* ── HORIZONTE ── */
+#horizon{
+  position:fixed;bottom:0;left:0;right:0;height:35%;z-index:2;
+  background:linear-gradient(to top,
+    rgba(0,5,20,0.9) 0%,
+    rgba(0,10,30,0.4) 40%,
+    transparent 100%);
+  pointer-events:none;
+}
+
+/* ── SCAN LINE (efecto radar sutil) ── */
+#scanline{
+  position:fixed;inset:0;z-index:3;pointer-events:none;
+  background:repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,255,180,0.012) 2px,
+    rgba(0,255,180,0.012) 4px
+  );
+}
+
+/* ── CONTENIDO PRINCIPAL ── */
+#content{
+  position:fixed;inset:0;z-index:10;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:0;
+  padding:24px;
+  padding-bottom:60px; /* espacio para el footer */
+}
+
+/* ── LOGO / TÍTULO ── */
+.logo-wrap{
+  display:flex;flex-direction:column;align-items:center;
+  margin-bottom:40px;
+}
+
+/* Box translúcido para el bloque de título */
+.logo-box{
+  display:flex;flex-direction:column;align-items:center;
+  padding:28px 44px 22px;
+  background:rgba(0,8,24,0.52);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:12px;
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  box-shadow:
+    0 0 60px rgba(0,120,255,0.08),
+    inset 0 1px 0 rgba(255,255,255,0.07);
+}
+
+.logo-eyebrow{
+  font-family:'DM Mono',monospace;
+  font-size:9px;letter-spacing:6px;
+  color:rgba(180,210,255,0.75);
+  text-transform:uppercase;
+  margin-bottom:14px;
+}
+.logo-title{
+  font-family:'Barlow',sans-serif;
+  font-size:clamp(64px,10vw,120px);
+  font-weight:900;letter-spacing:8px;
+  color:#ffffff;text-transform:uppercase;
+  line-height:1;
+  text-shadow:
+    0 0 60px rgba(100,180,255,0.5),
+    0 0 120px rgba(60,140,255,0.25);
+  opacity:0;
+  transform:translateY(20px);
+  animation:fadeUp 1s cubic-bezier(.2,0,.1,1) 0.4s forwards;
+}
+.logo-sub{
+  font-family:'DM Mono',monospace;
+  font-size:clamp(8px,1.1vw,11px);
+  letter-spacing:3px;color:rgba(170,200,255,0.65);
+  margin-top:14px;text-transform:uppercase;
+  opacity:0;
+  animation:fadeUp 0.8s ease 1.0s forwards;
+}
+.logo-divider{
+  width:100%;height:1px;
+  background:linear-gradient(to right,transparent,rgba(100,160,255,0.18),transparent);
+  margin:10px 0 8px;
+  opacity:0;
+  animation:fadeIn 0.8s ease 1.2s forwards;
+}
+.logo-conae{
+  font-family:'Orbitron',sans-serif;
+  font-size:13px;font-weight:700;letter-spacing:4px;
+  color:rgba(200,220,255,0.55);
+  opacity:0;
+  animation:fadeUp 0.8s ease 1.3s forwards;
+  line-height:1.7;
+  text-align:center;
+}
+
+@keyframes fadeUp{
+  to{opacity:1;transform:translateY(0);}
+}
+
+/* ── SEPARADOR ── */
+.sep{
+  width:1px;height:40px;
+  background:linear-gradient(to bottom,transparent,rgba(100,160,255,0.15),transparent);
+  margin-bottom:36px;
+  opacity:0;
+  animation:fadeIn 0.6s ease 1.6s forwards;
+}
+@keyframes fadeIn{to{opacity:1;}}
+
+/* ── BOTONES ── */
+.nav-buttons{
+  display:flex;flex-direction:column;gap:12px;width:100%;max-width:380px;
+  opacity:0;
+  animation:fadeUp 0.7s ease 1.8s forwards;
+}
+
+.nav-btn{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 22px;
+  background:rgba(0,10,30,0.55);
+  border:1px solid rgba(255,255,255,0.09);
+  border-radius:8px;
+  text-decoration:none;
+  cursor:pointer;
+  transition:all .25s cubic-bezier(.2,0,.1,1);
+  position:relative;overflow:hidden;
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.05);
+}
+.nav-btn::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,0.03) 0%,transparent 60%);
+  pointer-events:none;
+}
+.nav-btn:hover{
+  background:rgba(0,15,40,0.72);
+  border-color:rgba(255,255,255,0.2);
+  transform:translateX(6px);
+}
+.nav-btn:active{transform:translateX(2px);}
+
+.nav-btn .btn-left{display:flex;flex-direction:column;gap:3px;}
+.nav-btn .btn-label{
+  font-family:'DM Mono',monospace;
+  font-size:8px;letter-spacing:3px;
+  text-transform:uppercase;
+}
+.nav-btn .btn-title{
+  font-family:'Orbitron',sans-serif;
+  font-size:14px;font-weight:900;letter-spacing:3px;
+  color:#ffffff;
+}
+.nav-btn .btn-desc{
+  font-size:9px;color:rgba(255,255,255,0.28);
+  letter-spacing:0.5px;margin-top:2px;
+}
+.nav-btn .btn-arrow{
+  font-size:20px;
+  color:rgba(255,255,255,0.18);
+  transition:color .2s, transform .2s;
+  flex-shrink:0;
+}
+.nav-btn:hover .btn-arrow{
+  color:var(--accent);
+  transform:translateX(4px);
+}
+
+/* Colores individuales */
+.nav-btn.tracker{
+  --accent:#38bdf8;
+  border-left:2px solid rgba(56,189,248,0.4);
+}
+.nav-btn.tracker .btn-label{color:#38bdf8;}
+.nav-btn.tracker:hover{
+  box-shadow:0 0 30px rgba(56,189,248,0.12), inset 0 0 20px rgba(56,189,248,0.04);
+  border-color:rgba(56,189,248,0.35);
+}
+
+.nav-btn.modos{
+  --accent:#e8c840;
+  border-left:2px solid rgba(232,200,64,0.4);
+}
+.nav-btn.modos .btn-label{color:#e8c840;}
+.nav-btn.modos:hover{
+  box-shadow:0 0 30px rgba(232,200,64,0.1), inset 0 0 20px rgba(232,200,64,0.04);
+  border-color:rgba(232,200,64,0.35);
+}
+
+.nav-btn.animacion{
+  --accent:#a78bfa;
+  border-left:2px solid rgba(167,139,250,0.4);
+}
+.nav-btn.animacion .btn-label{color:#a78bfa;}
+.nav-btn.animacion:hover{
+  box-shadow:0 0 30px rgba(167,139,250,0.1), inset 0 0 20px rgba(167,139,250,0.04);
+  border-color:rgba(167,139,250,0.35);
+}
+
+/* ── FOOTER UNIFICADO ── */
+#site-footer{
+  position:fixed;bottom:0;left:0;right:0;z-index:20;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:7px 20px;
+  background:rgba(0,5,18,0.82);
+  border-top:1px solid rgba(100,160,255,0.08);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  font-family:'DM Mono',monospace;font-size:8px;letter-spacing:1.2px;
+  color:rgba(255,255,255,0.16);
+  opacity:0;animation:fadeIn 1s ease 2.4s forwards;
+}
+#site-footer .ft-left{text-transform:uppercase;}
+#site-footer .ft-right{text-align:right;font-size:11px;color:rgba(255,255,255,0.28);}
+#site-footer a{color:rgba(200,65,10,0.75);text-decoration:none;transition:color .2s;}
+#site-footer a:hover{color:#c8410a;}
+@media(max-width:600px){
+  #site-footer{flex-direction:column;gap:3px;padding:6px 14px;text-align:center;}
+  #site-footer .ft-left,#site-footer .ft-right{text-align:center;}
+  /* evitar superposición con footer */
+  #content{
+    justify-content:flex-start;
+    padding-top:clamp(20px,7vh,50px);
+    padding-bottom:100px;
+    overflow-y:auto;
+  }
+  .logo-wrap{margin-bottom:18px;}
+  .logo-box{padding:16px 22px 14px;}
+  .logo-title{font-size:clamp(48px,14vw,80px)!important;}
+  .sep{height:18px;margin-bottom:14px;}
+  .nav-buttons{gap:9px;}
+  .nav-btn{padding:12px 16px;}
+}
+
+/* ── LANG TOGGLE ── */
+#lang-btn{
+  position:fixed;top:16px;right:16px;z-index:100;
+  font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;
+  color:rgba(180,210,255,0.8);
+  background:rgba(0,10,30,0.55);
+  border:1px solid rgba(100,160,255,0.18);
+  border-radius:3px;padding:5px 12px;cursor:pointer;
+  transition:all .2s;white-space:nowrap;
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+}
+#lang-btn:hover{
+  color:#fff;
+  border-color:rgba(100,180,255,0.4);
+  background:rgba(0,20,50,0.72);
+}
+
+
+</style>
+</head>
+<body>
+
+<!-- VIDEO DE FONDO -->
+<video id="bg-video" autoplay muted loop playsinline preload="auto">
+  <source src="video_de_fondo.mp4" type="video/mp4">
+</video>
+
+<!-- Overlay de profundidad sobre el video -->
+<div id="video-overlay"></div>
+
+<!-- Scan lines estilo radar -->
+<div id="scanline"></div>
+
+
+
+<div id="horizon"></div>
+
+<div id="content">
+
+  <div class="logo-wrap">
+    <div class="logo-box">
+      <div class="logo-eyebrow" id="logo-eyebrow">Satélites de Observación de la Tierra</div>
+      <div class="logo-title">SAOCOM</div>
+      <div class="logo-sub" id="logo-sub">Satélite Argentino de Observación COn Microondas</div>
+      <div class="logo-divider"></div>
+      <div class="logo-conae" id="logo-conae">Comisión Nacional de Actividades Espaciales · Industria Argentina</div>
+    </div>
+  </div>
+
+  <div class="sep"></div>
+
+  <div class="nav-buttons">
+
+    <a href="tracker.html" class="nav-btn tracker">
+      <div class="btn-left">
+        <span class="btn-label" data-key="trackerLabel">En tiempo real</span>
+        <span class="btn-title">TRACKER</span>
+        <span class="btn-desc" data-key="trackerDesc">Posición orbital en vivo · Próximos pases</span>
+      </div>
+      <span class="btn-arrow">→</span>
+    </a>
+
+    <a href="modos.html" class="nav-btn modos">
+      <div class="btn-left">
+        <span class="btn-label" data-key="modosLabel">Simulación SAR</span>
+        <span class="btn-title" data-key="modosTitle">MODOS DE ADQUISICIÓN</span>
+        <span class="btn-desc" data-key="modosDesc">Stripmap · TopSAR Narrow · TopSAR Wide</span>
+      </div>
+      <span class="btn-arrow">→</span>
+    </a>
+
+    <a href="animacion.html" class="nav-btn animacion">
+      <div class="btn-left">
+        <span class="btn-label" data-key="animLabel">Modelo 3D</span>
+        <span class="btn-title" data-key="animTitle">ANIMACIÓN</span>
+        <span class="btn-desc" data-key="animDesc">Visualización interactiva del satélite</span>
+      </div>
+      <span class="btn-arrow">→</span>
+    </a>
+
+  </div>
+
+</div>
+
+<!-- Lang toggle -->
+<button id="lang-btn" onclick="toggleLang()">ESP / ENG</button>
+
+<!-- Footer unificado -->
+<div id="site-footer">
+  <span class="ft-left" id="ft-copy">SAOCOM es una marca registrada de la Comisión Nacional de Actividades Espaciales (CONAE). Este sitio es un proyecto independiente con fines educativos y no constituye un sitio oficial ni cuenta con el aval de CONAE.</span>
+  <span class="ft-right" id="ft-design">Página diseñada por <a href="https://www.linkedin.com/in/rubenpesoa/" target="_blank" rel="noopener">Ruben Pesoa</a></span>
+</div>
+
+<script>
+var LANG = 'es';
+var TRANSLATIONS = {
+  es: {
+    eyebrow: 'Satélites de Observación de la Tierra',
+    sub: 'Satélite Argentino de Observación COn Microondas',
+    conae: 'Comisión Nacional de Actividades Espaciales · Industria Argentina',
+    trackerLabel: 'En tiempo real',
+    trackerDesc: 'Posición orbital en vivo · Próximos pases',
+    modosLabel: 'Simulación SAR',
+    modosTitle: 'MODOS DE ADQUISICIÓN',
+    modosDesc: 'Stripmap · TopSAR Narrow · TopSAR Wide',
+    animLabel: 'Modelo 3D',
+    animTitle: 'ANIMACIÓN',
+    animDesc: 'Visualización interactiva del satélite',
+    ftCopy: 'SAOCOM es una marca registrada de la Comisión Nacional de Actividades Espaciales (CONAE). Este sitio es un proyecto independiente con fines educativos y no constituye un sitio oficial ni cuenta con el aval de CONAE.',
+    ftDesign: 'Página diseñada por',
+    langBtn: 'ESP / ENG'
+  },
+  en: {
+    eyebrow: 'Earth Observation Satellites',
+    sub: 'Argentine Microwaves Observation Satellite',
+    conae: 'National Commission for Space Activities · Made in Argentina',
+    trackerLabel: 'Real time',
+    trackerDesc: 'Live orbital position · Upcoming passes',
+    modosLabel: 'SAR Simulation',
+    modosTitle: 'ACQUISITION MODES',
+    modosDesc: 'Stripmap · TopSAR Narrow · TopSAR Wide',
+    animLabel: '3D Model',
+    animTitle: 'ANIMATION',
+    animDesc: 'Interactive satellite visualization',
+    ftCopy: 'SAOCOM is a registered trademark of the Comisión Nacional de Actividades Espaciales (CONAE). This website is an independent educational project and is not an official CONAE website nor endorsed by CONAE.',
+    ftDesign: 'Page designed by',
+    langBtn: 'ENG / ESP'
+  }
+};
+
+function toggleLang(){
+  LANG = LANG==='es' ? 'en' : 'es';
+  applyLang();
+}
+
+function applyLang(){
+  var t = TRANSLATIONS[LANG];
+
+  // Logo / header
+  document.getElementById('logo-eyebrow').textContent = t.eyebrow;
+  document.getElementById('logo-sub').textContent = t.sub;
+  document.getElementById('logo-conae').textContent = t.conae;
+
+// Botones: usar data-key para mapeo limpio
+  document.querySelectorAll('[data-key]').forEach(function(el){
+    var key = el.getAttribute('data-key');
+    if(t[key] !== undefined) el.textContent = t[key];
+  });
+
+  // Footer
+  document.getElementById('ft-copy').textContent = t.ftCopy;
+  document.getElementById('ft-design').innerHTML =
+    t.ftDesign + ' <a href="https://www.linkedin.com/in/rubenpesoa/" target="_blank" rel="noopener">Ruben Pesoa</a>';
+
+  // Lang button
+  document.getElementById('lang-btn').textContent = t.langBtn;
+}
+</script>
+
+
+
+</body>
+</html>
