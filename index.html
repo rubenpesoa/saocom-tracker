@@ -41,10 +41,6 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--bright);
   border-radius:3px;color:var(--dim)}
 .tle-pill.ok{color:var(--green);border-color:rgba(52,211,153,0.3)}
 .tle-pill.fb{color:var(--red);border-color:rgba(248,113,113,0.3)}
-.utc-wrap{text-align:right}
-#utcclk{font-family:'Roboto',sans-serif;font-size:clamp(8px,1.1vw,11px);
-  color:var(--bright);letter-spacing:2px;white-space:nowrap}
-#localclk{font-size:8px;color:var(--text);letter-spacing:1px;margin-top:1px}
 
 /* ── Header popup buttons ── */
 .hdr-popup-btn{
@@ -83,13 +79,13 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--bright);
 #sidebar::-webkit-scrollbar{width:3px}
 #sidebar::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
 .sec{border-bottom:1px solid var(--border);padding:10px 13px}
-.sec-hd{font-family:'Roboto',sans-serif;font-size:7.5px;letter-spacing:3px;
-  color:var(--dim);text-transform:uppercase;margin-bottom:8px}
+.sec-hd{font-family:'Roboto',sans-serif;font-size:9px;letter-spacing:3px;
+  color:var(--bright);text-transform:uppercase;margin-bottom:8px}
 .row{display:flex;justify-content:space-between;align-items:baseline;
-  padding:2.5px 0;border-bottom:1px solid rgba(255,255,255,0.06);font-size:10px}
+  padding:2.5px 0;border-bottom:1px solid rgba(255,255,255,0.06);font-size:12px}
 .row:last-child{border-bottom:none}
-.lbl{color:var(--dim);font-size:9px}
-.val{color:#fff;text-align:right;font-size:10px}
+.lbl{color:#fff;font-size:11px}
+.val{color:#fff;text-align:right;font-size:12px}
 .val.a{color:#fff}.val.b{color:#fff}
 .badge{display:inline-block;margin-top:6px;padding:2px 10px;border-radius:3px;font-size:9px;letter-spacing:1px}
 .badge.up{background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.3);color:var(--green)}
@@ -127,8 +123,10 @@ table.passes tr:last-child td{border-bottom:none}
   cursor:pointer;letter-spacing:.8px;white-space:nowrap;transition:all .15s;flex-shrink:0}
 .btn:hover{border-color:rgba(255,255,255,0.5);color:#fff;background:rgba(255,255,255,0.06)}
 .btn.play{font-size:14px;padding:5px 14px}
-#timelbl{font-family:'Roboto',sans-serif;font-size:clamp(8px,1.1vw,12px);
-  color:var(--bright);letter-spacing:2px;flex:1;text-align:center;white-space:nowrap}
+#datelbl{font-family:'Roboto',sans-serif;font-size:clamp(8px,1.1vw,12px);
+  color:var(--bright);letter-spacing:2px;text-align:center;white-space:nowrap}
+#utclbl{font-family:'Roboto',sans-serif;font-size:clamp(8px,1.1vw,12px);
+  color:var(--bright);letter-spacing:2px;text-align:center;white-space:nowrap}
 #localtlbl{font-family:'Roboto',sans-serif;font-size:clamp(7px,0.9vw,10px);
   color:var(--text);letter-spacing:1.5px;text-align:center;white-space:nowrap}
 .scrub-wrap{flex:2;display:flex;align-items:center;gap:8px;min-width:0}
@@ -324,7 +322,7 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;
   border-radius:10px;
   padding:16px 18px 14px;
   display:flex;flex-direction:column;align-items:center;
-  cursor:pointer;
+  cursor:default;
   transition:background .25s, border-color .25s, box-shadow .25s;
   box-shadow:0 4px 28px rgba(0,0,0,0.45),inset 0 1px 0 rgba(255,255,255,0.09);
   min-width:185px;
@@ -355,11 +353,9 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;
   color:rgba(255,255,255,0.85);white-space:nowrap;
 }
 .m-card-detail{
-  width:100%;overflow:hidden;max-height:0;opacity:0;
-  transition:max-height .45s cubic-bezier(0.4,0,0.2,1), opacity .35s ease, margin-top .35s;
-  margin-top:0;
+  width:100%;overflow:hidden;opacity:1;
+  margin-top:14px;
 }
-.m-card.active .m-card-detail{max-height:240px;opacity:1;margin-top:14px;}
 .m-detail-divider{width:100%;height:1px;background:rgba(255,255,255,0.12);margin-bottom:12px;}
 .m-detail-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:7px;gap:16px;}
 .m-detail-lbl{font-family:'Roboto',sans-serif;font-size:8px;letter-spacing:2px;color:rgba(255,255,255,0.38);text-transform:uppercase;white-space:nowrap;}
@@ -369,8 +365,6 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;
 .m-pol-sp{color:#f87060;border-color:rgba(248,112,96,0.5);background:rgba(248,112,96,0.10);}
 .m-pol-dp{color:#e8c840;border-color:rgba(232,200,64,0.5);background:rgba(232,200,64,0.10);}
 .m-pol-qp{color:#40c878;border-color:rgba(64,200,120,0.5);background:rgba(64,200,120,0.10);}
-.m-card-hint{font-family:'Roboto',sans-serif;font-size:7px;letter-spacing:1.5px;color:rgba(255,255,255,0.22);margin-top:8px;transition:opacity .3s;}
-.m-card.active .m-card-hint{opacity:0;}
 
 /* ══ ANIMATION MODAL ══ */
 #anim-modal{background:#010408;}
@@ -387,6 +381,13 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;
   .globe-btn .btn-txt-long{display:none;}
   .globe-btn .btn-txt-short{display:inline;}
 }
+
+/* ── Mobile: only globe view ── */
+@media(max-width:767px){
+  .globe-btn{display:none;}
+  #controls-desktop{display:none;}
+  #globe-modal-hdr .modal-close-btn{display:none;}
+}
 </style>
 </head>
 <body>
@@ -400,10 +401,6 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;
     <button class="hdr-popup-btn anim-btn" onclick="openAnimModal()" data-es="🛸 ANIMACIÓN" data-en="🛸 ANIMATION">🛸 ANIMACIÓN</button>
 
     <button id="lang-btn" onclick="toggleLang()">ESP / ENG</button>
-    <div class="utc-wrap">
-      <div id="utcclk">-- UTC</div>
-      <div id="localclk">-- local</div>
-    </div>
   </div>
 </div>
 
@@ -432,10 +429,7 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;
         <div class="row"><span class="lbl" data-es="Fecha de TLE" data-en="TLE Date">Fecha de TLE</span><span class="val b" id="tle-date-b">—</span></div>
       </div>
       <div class="disclaimer" style="flex:1">
-        <strong id="disc-title">AVISO LEGAL</strong><br><br>
-        <span id="disc-body">SAOCOM es marca registrada de la <strong>CONAE</strong>. Uso didáctico.<br><br>
-        TLEs: <strong>Space-Track.org</strong> vía CelesTrak.
-        Mapa © <strong>OpenStreetMap</strong> / CARTO.</span>
+        <span id="disc-body">Los SAOCOM son una constelación de satélites argentinos diseñados por la CONAE para la observación terrestre lanzados en 2018 y 2020; cuentan con avanzado Radar de Apertura Sintética (SAR) en Banda L diseñado y fabricado en Argentina, que permite adquirir imágenes tanto de día como de noche, atravesando nubes y vegetación para medir la humedad del suelo, monitorear deslizamientos de suelos, gestionar emergencias (inundaciones, incendios, entre otros), detectar manchas de hidrocarburos y monitorear embarcaciones en el mar.</span>
       </div>
     </div>
 
@@ -461,7 +455,8 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;
   <button class="btn" onclick="goNow()" id="btn-now" data-es="RESET" data-en="RESET">RESET</button>
   <button class="btn play" id="playbtn" onclick="togglePlay()">▶</button>
   <div style="display:flex;flex-direction:column;align-items:center;flex:1;gap:1px">
-    <div id="timelbl">—</div>
+    <div id="datelbl">—</div>
+    <div id="utclbl">—</div>
     <div id="localtlbl">—</div>
   </div>
   <div class="scrub-wrap">
@@ -562,7 +557,7 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;
     <div id="mode-cards-row">
 
       <!-- STRIPMAP -->
-      <div class="m-card sm" id="mc-sm" onclick="toggleMCard('mc-sm')">
+      <div class="m-card sm" id="mc-sm">
         <div class="m-card-name" data-es="Stripmap" data-en="Stripmap">Stripmap</div>
         <div class="m-card-scene">
           <div class="m-card-rect" style="width:9px;height:33px;"></div>
@@ -591,11 +586,10 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;
             </div>
           </div>
         </div>
-        <div class="m-card-hint" data-es="CLICK PARA DETALLE" data-en="CLICK FOR DETAIL">CLICK PARA DETALLE</div>
       </div>
 
       <!-- TOPSAR NARROW -->
-      <div class="m-card tn" id="mc-tn" onclick="toggleMCard('mc-tn')">
+      <div class="m-card tn" id="mc-tn">
         <div class="m-card-name">TOPSAR Narrow</div>
         <div class="m-card-scene">
           <div class="m-card-rect" style="width:67px;height:100px;"></div>
@@ -620,14 +614,14 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;
             <div class="m-pol-badges">
               <span class="m-pol-badge m-pol-sp">SP</span>
               <span class="m-pol-badge m-pol-dp">DP</span>
+              <span class="m-pol-badge m-pol-qp">QP</span>
             </div>
           </div>
         </div>
-        <div class="m-card-hint" data-es="CLICK PARA DETALLE" data-en="CLICK FOR DETAIL">CLICK PARA DETALLE</div>
       </div>
 
       <!-- TOPSAR WIDE -->
-      <div class="m-card tw" id="mc-tw" onclick="toggleMCard('mc-tw')">
+      <div class="m-card tw" id="mc-tw">
         <div class="m-card-name">TOPSAR Wide</div>
         <div class="m-card-scene">
           <div class="m-card-rect" style="width:99px;height:200px;"></div>
@@ -652,10 +646,10 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;
             <div class="m-pol-badges">
               <span class="m-pol-badge m-pol-sp">SP</span>
               <span class="m-pol-badge m-pol-dp">DP</span>
+              <span class="m-pol-badge m-pol-qp">QP</span>
             </div>
           </div>
         </div>
-        <div class="m-card-hint" data-es="CLICK PARA DETALLE" data-en="CLICK FOR DETAIL">CLICK PARA DETALLE</div>
       </div>
 
     </div><!-- /mode-cards-row -->
@@ -666,10 +660,14 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;
 <!-- ═══════════════════════════════════════════
      ANIMATION MODAL
 ═══════════════════════════════════════════ -->
-<div id="anim-modal" class="modal-backdrop">
+<div id="anim-modal" class="modal-backdrop" style="flex-direction:column;">
   <button class="modal-close-btn" onclick="closeAnimModal()"
     style="position:fixed;top:14px;right:14px;z-index:5100;">✕ CERRAR</button>
-  <iframe id="anim-iframe" src="" allowfullscreen></iframe>
+  <iframe id="anim-iframe" src="" allowfullscreen style="flex:1;width:100%;border:none;display:none;"></iframe>
+  <div id="anim-fallback" style="display:none;flex:1;width:100%;align-items:center;justify-content:center;flex-direction:column;gap:14px;color:rgba(255,255,255,0.55);font-family:'Roboto',sans-serif;font-size:13px;letter-spacing:1px;">
+    <div style="font-size:32px;">🛸</div>
+    <div>La animación no está disponible en este momento.</div>
+  </div>
 </div>
 
 
@@ -690,8 +688,7 @@ var T = {
     trackerTitle:'SAO<em style="color:var(--c1a);font-style:normal">COM</em> TRACKER',
     latitud:'Latitud', longitud:'Longitud', altitud:'Altitud', velocidad:'Velocidad',
     passesHd:'Próximos passes (el. &gt; 5°)', calculating:'Calculando…',
-    discTitle:'AVISO LEGAL',
-    discBody:'SAOCOM es marca registrada de la <strong>CONAE</strong>. Uso didáctico.<br><br>TLEs: <strong>Space-Track.org</strong> vía CelesTrak. Mapa © <strong>OpenStreetMap</strong> / CARTO.',
+    discBody:'Los SAOCOM son una constelación de satélites argentinos diseñados por la CONAE para la observación terrestre lanzados en 2018 y 2020; cuentan con avanzado Radar de Apertura Sintética (SAR) en Banda L diseñado y fabricado en Argentina, que permite adquirir imágenes tanto de día como de noche, atravesando nubes y vegetación para medir la humedad del suelo, monitorear deslizamientos de suelos, gestionar emergencias (inundaciones, incendios, entre otros), detectar manchas de hidrocarburos y monitorear embarcaciones en el mar.',
     simWarn:'⚠ TIEMPO SIMULADO', nextPass:'próximo pase',
     now:'RESET', back:'◀ ATRÁS', fwd:'ADELANTE ▶', loading:'Iniciando…',
     modosTitle:'TIPOS DE IMÁGENES SATELITALES',
@@ -703,8 +700,7 @@ var T = {
     trackerTitle:'SAO<em style="color:var(--c1a);font-style:normal">COM</em> TRACKER',
     latitud:'Latitude', longitud:'Longitude', altitud:'Altitude', velocidad:'Speed',
     passesHd:'Next passes (el. &gt; 5°)', calculating:'Calculating…',
-    discTitle:'DISCLAIMER',
-    discBody:'SAOCOM is a registered trademark of <strong>CONAE</strong>. Educational use.<br><br>TLEs: <strong>Space-Track.org</strong> via CelesTrak. Map © <strong>OpenStreetMap</strong> / CARTO.',
+    discBody:'SAOCOM are Argentine satellites designed by CONAE for Earth observation, launched in 2018 and 2020. They carry an L-band SAR radar designed and built in Argentina, capable of acquiring images day and night, through clouds and vegetation, to measure soil moisture, monitor landslides, manage emergencies, detect hydrocarbon spills, and monitor vessels at sea.',
     simWarn:'⚠ SIMULATED TIME', nextPass:'next pass',
     now:'RESET', back:'◀ BACK', fwd:'FORWARD ▶', loading:'Starting…',
     modosTitle:'SATELLITE IMAGE TYPES',
@@ -726,8 +722,6 @@ function applyLang(){
     var key = el.tagName === 'BUTTON' || el.tagName === 'SPAN' || el.tagName === 'DIV' ? null : null;
     el.textContent = LANG==='es' ? el.getAttribute('data-es') : el.getAttribute('data-en');
   });
-  document.getElementById('passes-hd').innerHTML = t.passesHd;
-  document.getElementById('disc-title').textContent = t.discTitle;
   document.getElementById('disc-body').innerHTML = t.discBody;
   document.getElementById('sim-warn').textContent = t.simWarn;
   document.getElementById('sim-warn-m').textContent = t.simWarn;
@@ -784,11 +778,21 @@ function closeModosModal(){
 }
 function openAnimModal(){
   document.getElementById('anim-modal').classList.add('open');
-  document.getElementById('anim-iframe').src = 'animacion.html';
+  var iframe=document.getElementById('anim-iframe');
+  var fb=document.getElementById('anim-fallback');
+  iframe.style.display='none'; fb.style.display='none';
+  fetch('animacion.html',{method:'HEAD'})
+    .then(function(r){
+      if(r.ok){iframe.src='animacion.html';iframe.style.display='block';}
+      else{fb.style.display='flex';}
+    })
+    .catch(function(){fb.style.display='flex';});
 }
 function closeAnimModal(){
   document.getElementById('anim-modal').classList.remove('open');
-  document.getElementById('anim-iframe').src = '';
+  var iframe=document.getElementById('anim-iframe');
+  iframe.src='';iframe.style.display='none';
+  document.getElementById('anim-fallback').style.display='none';
 }
 
 /* Close modals on Escape */
@@ -1177,6 +1181,7 @@ function refreshPasses3(){
 
 function buildTouchHandlers(){
   var gw=document.getElementById('globe-wrap');
+  var pinchDist3=null;
   function startD(x,y){isDragging3=true;autoRotate3=false;prevTouch3={x,y};rotVelX3=rotVelY3=0;}
   function moveD(x,y){
     if(!isDragging3)return;
@@ -1186,12 +1191,34 @@ function buildTouchHandlers(){
     rotVelY3=dx*0.005;rotVelX3=dy*0.005;prevTouch3={x,y};
   }
   function endD(){isDragging3=false;}
+  function clampZ(z){return Math.max(3,Math.min(15,z));}
   gw.addEventListener('mousedown',function(e){startD(e.clientX,e.clientY);});
   gw.addEventListener('mousemove',function(e){moveD(e.clientX,e.clientY);});
   gw.addEventListener('mouseup',endD);gw.addEventListener('mouseleave',endD);
-  gw.addEventListener('touchstart',function(e){if(e.touches.length===1)startD(e.touches[0].clientX,e.touches[0].clientY);},{passive:true});
-  gw.addEventListener('touchmove',function(e){if(e.touches.length===1)moveD(e.touches[0].clientX,e.touches[0].clientY);},{passive:true});
-  gw.addEventListener('touchend',function(e){endD();if(e.changedTouches.length===1)handleTap3(e.changedTouches[0].clientX,e.changedTouches[0].clientY);});
+  gw.addEventListener('wheel',function(e){
+    e.preventDefault();
+    camera3.position.z=clampZ(camera3.position.z+e.deltaY*0.012);
+  },{passive:false});
+  gw.addEventListener('touchstart',function(e){
+    if(e.touches.length===1){startD(e.touches[0].clientX,e.touches[0].clientY);}
+    else if(e.touches.length===2){
+      pinchDist3=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+      isDragging3=false;
+    }
+  },{passive:true});
+  gw.addEventListener('touchmove',function(e){
+    if(e.touches.length===1){moveD(e.touches[0].clientX,e.touches[0].clientY);}
+    else if(e.touches.length===2&&pinchDist3!==null){
+      var d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+      camera3.position.z=clampZ(camera3.position.z*(pinchDist3/d));
+      pinchDist3=d;
+    }
+  },{passive:true});
+  gw.addEventListener('touchend',function(e){
+    if(e.touches.length<2)pinchDist3=null;
+    endD();
+    if(e.changedTouches.length===1&&pinchDist3===null)handleTap3(e.changedTouches[0].clientX,e.changedTouches[0].clientY);
+  });
   gw.addEventListener('click',function(e){handleTap3(e.clientX,e.clientY);});
 }
 
@@ -1285,13 +1312,11 @@ function mainLoop(ts){
   lastTs=ts;
   var t=new Date(BASE.getTime()+tOff*1000);
   var iso=t.toISOString();
-  document.getElementById('utcclk').textContent=iso.slice(11,19)+' UTC';
   var ls=t.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'});
-  var ld=t.toLocaleDateString([],{day:'2-digit',month:'2-digit'});
   var tz=(Intl.DateTimeFormat().resolvedOptions().timeZone||'local').split('/').pop().replace('_',' ');
-  document.getElementById('localclk').textContent=ld+' '+ls+' '+tz;
-  document.getElementById('timelbl').textContent=iso.slice(0,10)+'  '+iso.slice(11,19)+' UTC';
-  document.getElementById('localtlbl').textContent=ld+' '+ls+' '+tz;
+  document.getElementById('datelbl').textContent=iso.slice(0,10);
+  document.getElementById('utclbl').textContent=iso.slice(11,19)+' UTC';
+  document.getElementById('localtlbl').textContent=ls+' '+tz;
   renderDesktop(t);
   if(globeModalOpen){renderMobile(t);}
   frameCount++;
