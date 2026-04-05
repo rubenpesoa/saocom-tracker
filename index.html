@@ -398,7 +398,7 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;
   <div class="hdr-right">
     <button class="hdr-popup-btn globe-btn" onclick="openGlobeModal()" data-es="🌍 VER EN 3D" data-en="🌍 VIEW IN 3D">🌍 VER EN 3D</button>
     <button class="hdr-popup-btn modos-btn" onclick="openModosModal()" data-es="📡 TIPOS DE IMÁGENES" data-en="📡 IMAGE TYPES">📡 TIPOS DE IMÁGENES</button>
-    <button class="hdr-popup-btn anim-btn" onclick="openAnimModal()" data-es="🛸 ANIMACIÓN" data-en="🛸 ANIMATION">🛸 ANIMACIÓN</button>
+    <button class="hdr-popup-btn anim-btn" onclick="openAnimModal()" data-es="🛸 MÁS INFORMACIÓN" data-en="🛸 MORE INFO">🛸 MÁS INFORMACIÓN</button>
 
     <button id="lang-btn" onclick="toggleLang()">ESP / ENG</button>
   </div>
@@ -780,13 +780,10 @@ function openAnimModal(){
   document.getElementById('anim-modal').classList.add('open');
   var iframe=document.getElementById('anim-iframe');
   var fb=document.getElementById('anim-fallback');
-  iframe.style.display='none'; fb.style.display='none';
-  fetch('animacion.html',{method:'HEAD'})
-    .then(function(r){
-      if(r.ok){iframe.src='animacion.html';iframe.style.display='block';}
-      else{fb.style.display='flex';}
-    })
-    .catch(function(){fb.style.display='flex';});
+  fb.style.display='none';
+  iframe.style.display='block';
+  iframe.src='animacion.html';
+  iframe.onerror=function(){iframe.style.display='none';fb.style.display='flex';};
 }
 function closeAnimModal(){
   document.getElementById('anim-modal').classList.remove('open');
